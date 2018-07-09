@@ -1,0 +1,167 @@
+
+public class Matrix {
+
+  public double[][] c;
+
+  public Matrix() {}
+  public Matrix(int rows,int cols,double[] data) {
+
+  }
+  public Matrix getIdentity() {
+    return new Matrix(
+      1,0,0,
+      0,1,0,
+      0,0,1
+    );
+  }
+  public Matrix3x3 transpose() {
+    double t1=_12;
+    double t2=_13;
+    double t3=_23;
+    _12=_21;
+    _13=_31;
+    _23=_32;
+    _21=t1;
+    _31=t2;
+    _32=t3;
+    return this;
+  }
+
+  public Matrix3x3 getTranspose() {
+    return new Matrix3x3(
+      _11,_21,_31,
+      _12,_22,_32,
+      _13,_23,_33
+    );
+  }
+  public double getDeterminant() {
+    return  _11*_22*_33 -
+            _11*_32*_23 +
+            _21*_32*_13 -
+            _21*_12*_33 +
+            _31*_12*_23 -
+            _31*_22*_13;
+  }
+  public Matrix3x3 getInverse() {
+    double d= _11*_22*_33 -
+              _11*_32*_23 +
+              _21*_32*_13 -
+              _21*_12*_33 +
+              _31*_12*_23 -
+              _31*_22*_13;
+    if(d==0) d=1.0;
+    d=1/d;
+    return new Matrix3x3(
+      (_22*_33-_23*_32)*d,  -(_12*_33-_13*_32)*d,  (_12*_23-_13*_22)*d,
+      (_21*_33-_23*_31)*d,   (_11*_33-_13*_31)*d, -(_11*_23-_13*_21)*d,
+      (_21*_32-_22*_31)*d,  -(_11*_32-_12*_31)*d,  (_11*_22-_12*_21)*d
+    );
+  }
+  //public Vector3D multiply(Vector3D v) {
+  //  return null;
+  //}
+  public Matrix3x3 multiply(Matrix3x3 m) {
+    _11 = _11*m._11 + _12*m._21 + _13*m._31;
+    _12 = _11*m._12 + _12*m._22 + _13*m._32;
+    _13 = _11*m._13 + _12*m._23 + _13*m._33;
+    _21 = _21*m._11 + _22*m._21 + _23*m._31;
+    _22 = _21*m._12 + _22*m._22 + _23*m._32;
+    _23 = _21*m._13 + _22*m._23 + _23*m._33;
+    _31 = _31*m._11 + _32*m._21 + _33*m._31;
+    _32 = _31*m._12 + _32*m._22 + _33*m._32;
+    _33 = _31*m._13 + _32*m._23 + _33*m._33;
+    return this;
+  }
+
+  public Matrix3x3 multiply(double scalar) {
+    _11*=scalar; _12*=scalar; _13*=scalar;
+    _21*=scalar; _22*=scalar; _23*=scalar;
+    _31*=scalar; _32*=scalar; _33*=scalar;
+    return this;
+  }
+
+  public Matrix3x3 add(Matrix3x3 m) {
+    _11+=m._11; _12+=m._12; _13+=m._13;
+    _21+=m._11; _22+=m._12; _23+=m._13;
+    _31+=m._11; _32+=m._12; _33+=m._13;
+    return this;
+  }
+
+  public Matrix3x3 add(double scalar) {
+    _11+=scalar; _12+=scalar; _13+=scalar;
+    _21+=scalar; _22+=scalar; _23+=scalar;
+    _31+=scalar; _32+=scalar; _33+=scalar;
+    return this;
+  }
+
+  public Matrix3x3 subtract(Matrix3x3 m) {
+    _11-=m._11; _12-=m._12; _13-=m._13;
+    _21-=m._11; _22-=m._12; _23-=m._13;
+    _31-=m._11; _32-=m._12; _33-=m._13;
+    return this;
+  }
+
+  public Matrix3x3 subtract(double scalar) {
+    return add(-scalar);
+  }
+
+  public Matrix3x3 divide(Matrix3x3 m) {
+    return this;
+  }
+
+  public Matrix3x3 divide(double scalar) {
+    return multiply(1.0/scalar);
+  }
+
+  public Quaternion3 getQuaternion() {
+    Quaternion3 q=new Quaternion3();
+    double tr,s;
+    tr= _11 + _22 + _33;
+    if(tr>=0) {
+      s=Math.sqrt(tr+1);
+      q.s=0.5*s;
+      s=0.5/s;
+      q.x=(_32 - _23)*s;
+      q.y=(_13 - _31)*s;
+      q.z=(_21 - _12)*s;
+    } else {
+      int i=0;
+      if(_22 > _11) {
+        i=1;
+        if(_33 > _22) i=2;
+      } else {
+        if(_33 > _11) i=2;
+      }
+      //
+      switch(i) {
+        case 0 :
+          s=Math.sqrt(_11 - _22 + _33 +1);
+          q.x=0.5*s;
+          s=0.5/s;
+          q.y=(_12 + _21)*s;
+          q.z=(_31 + _13)*s;
+          q.s=(_32 - _23)*s;
+          break;
+        case 1 :
+          s=Math.sqrt(_22 - _33 + _11 +1);
+          q.y=0.5*s;
+          s=0.5/s;
+          q.z=(_23 + _32)*s;
+          q.x=(_12 + _21)*s;
+          q.s=(_13 - _31)*s;
+          break;
+        case 2 :
+          s=Math.sqrt(_33 - _11 + _22 +1);
+          q.z=0.5*s;
+          s=0.5/s;
+          q.x=(_31 + _13)*s;
+          q.y=(_23 + _32)*s;
+          q.s=(_21 - _12)*s;
+      }
+    }
+    return q;
+  }
+
+
+
+}
