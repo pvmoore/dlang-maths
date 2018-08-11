@@ -52,4 +52,17 @@ alias uvec2 = Vec2!uint;
 alias uvec3 = Vec3!uint;
 alias uvec4 = Vec4!uint;
 
+alias int2 = Vec2!int;
+alias int3 = Vec3!int;
+alias int4 = Vec4!int;
+
+alias uint2 = Vec2!uint;
+alias uint3 = Vec3!uint;
+alias uint4 = Vec4!uint;
+
+alias float2 = Vec2!float;
+alias float3 = Vec3!float;
+alias float4 = Vec4!float;
+
+
 alias mat4  = Mat4!float;
