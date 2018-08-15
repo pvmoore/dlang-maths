@@ -101,6 +101,23 @@ pragma(inline,true) {
 	void opMulAssign(Vec2!T rhs) { x *= rhs.x; y *= rhs.y; }
 	void opDivAssign(Vec2!T rhs) { x /= rhs.x; y /= rhs.y; }
 
+static if(!isFloatingPoint!T) {
+    auto opAnd(T s) const        { return Vec2!T(x&s, y&s); }
+    auto opAnd(Vec2!T rhs) const { return Vec2!T(x&rhs.x, y&rhs.y); }
+    void opAndAssign(T s)        { x &= s;     y &= s; }
+    void opAndAssign(Vec2!T rhs) { x &= rhs.x; y &= rhs.y; }
+
+    auto opOr(T s) const         { return Vec2!T(x|s, y|s); }
+    auto opOr(Vec2!T rhs) const  { return Vec2!T(x|rhs.x, y|rhs.y); }
+    void opOrAssign(T s)         { x |= s;     y |= s; }
+    void opOrAssign(Vec2!T rhs)  { x |= rhs.x; y |= rhs.y; }
+
+    auto opXor(T s) const        { return Vec2!T(x^s, y^s); }
+    auto opXor(Vec2!T rhs) const { return Vec2!T(x^rhs.x, y^rhs.y); }
+    void opXorAssign(T s)        { x ^= s;     y ^= s; }
+    void opXorAssign(Vec2!T rhs) { x ^= rhs.x; y ^= rhs.y; }
+}
+
     bool anyLT(T v) const { return x<v || y<v; }
     bool anyLTE(T v) const { return x<=v || y<=v; }
     bool anyGT(T v) const { return x>v || y>v; }

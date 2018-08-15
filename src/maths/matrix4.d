@@ -19,8 +19,8 @@ final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
 					  c[0][2], c[1][2], c[2][2], c[3][2],
 					  c[0][3], c[1][3], c[2][3], c[3][3]);
     }
-nothrow:
-@nogc:
+//nothrow:
+//@nogc:
 	this(T v) {
 		c[0] = Vec4!T(v);
 		c[1] = Vec4!T(v);
@@ -101,7 +101,7 @@ nothrow:
 		T S = sin(radians);
 
 		Vec3!T axis = v.normalised();
-		Vec3!T temp = axis * (1f - C);
+		Vec3!T temp = axis * (1.0f - C);
 
 		Mat4!T Rotate = Mat4!T.identity();
 		Rotate[0][0] = C + temp[0] * axis[0];
@@ -160,14 +160,31 @@ nothrow:
 	static Mat4!T perspective(Angle!T fov, T aspect, T zNear, T zFar) {
 		T tanHalfFov = tan(fov.radians / 2.0f);
 
+        auto f = 1.0f / tanHalfFov;
+
 		auto result = Mat4!T(0);
-		result[0][0] = 1.0f / (aspect * tanHalfFov);
-		result[1][1] = 1.0f / (tanHalfFov);
-		result[2][2] = - (zFar + zNear) / (zFar - zNear);
+		result[0][0] = f/aspect;
+		result[1][1] = f;
+
+		result[2][2] = zFar  / (zFar - zNear);
 		result[2][3] = - 1.0f;
-		result[3][2] = - (2.0f * zFar * zNear) / (zFar - zNear);
+		result[3][2] = (zFar * zNear) / (zFar - zNear);
+
+
+        //result[0][0] = 1.0f / (aspect * tanHalfFov);
+        //result[1][1] = 1.0f / (tanHalfFov);
+        //
+        //result[2][2] = - (zFar + zNear) / (zFar - zNear);
+        //result[2][3] = - 1.0f;
+        //result[3][2] = - (2.0f * zFar * zNear) / (zFar - zNear);
+
+
+        //result[2][2] = zFar  / (zNear - zFar);
+        //result[2][3] = - 1.0f;
+        //result[3][2] = -(zFar * zNear) / (zFar - zNear);
 		return result;
 	}
+
 
 	T* ptr() { return cast(T*)c.ptr; }
 

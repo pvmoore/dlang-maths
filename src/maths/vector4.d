@@ -127,6 +127,23 @@ pragma(inline,true) {
 	void opMulAssign(Vec4!T rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; w *= rhs.w; }
 	void opDivAssign(Vec4!T rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; w /= rhs.w; }
 
+static if(!isFloatingPoint!T) {
+	auto opAnd(T s) const        { return Vec4!T(x&s,     y&s,     z&s,     w&s); }
+	auto opAnd(Vec4!T rhs) const { return Vec4!T(x&rhs.x, y&rhs.y, z&rhs.z, w&rhs.w); }
+	void opAndAssign(T s)        { x &= s;     y &= s;     z &= s;     w &= s; }
+	void opAndAssign(Vec4!T rhs) { x &= rhs.x; y &= rhs.y; z &= rhs.z; w &= rhs.w; }
+
+	auto opOr(T s) const         { return Vec4!T(x|s,     y|s,     z|s,     w|s); }
+	auto opOr(Vec4!T rhs) const  { return Vec4!T(x|rhs.x, y|rhs.y, z|rhs.z, w|rhs.w); }
+	void opOrAssign(T s)         { x |= s;     y |= s;     z |= s;     w |= s; }
+	void opOrAssign(Vec4!T rhs)  { x |= rhs.x; y |= rhs.y; z |= rhs.z; w |= rhs.w; }
+
+	auto opXor(T s) const        { return Vec4!T(x^s,     y^s,     z^s,     w^s); }
+	auto opXor(Vec4!T rhs) const { return Vec4!T(x^rhs.x, y^rhs.y, z^rhs.z, w^rhs.w); }
+	void opXorAssign(T s)        { x ^= s;     y ^= s;     z ^= s;     w ^= s; }
+	void opXorAssign(Vec4!T rhs) { x ^= rhs.x; y ^= rhs.y; z ^= rhs.z; w ^= rhs.w; }
+}
+
     bool anyLT(T v) const { return x<v || y<v || z<v || w<v; }
     bool anyLTE(T v) const { return x<=v || y<=v || z<=v || w<=v; }
     bool anyGT(T v) const { return x>v || y>v || z>v || w>v; }

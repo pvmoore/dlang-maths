@@ -109,7 +109,7 @@ pragma(inline,true) {
         }
 
         ulong a = 5381;
-        a  = ((a << 7) ) + p[0];
+        a  = ((a << 7) )  + p[0];
         a ^= ((a << 13) ) + p[1];
         a  = ((a << 19) ) + p[2];
         return a;
@@ -150,6 +150,23 @@ pragma(inline,true) {
 	void opMulAssign(Vec3!T rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; }
 	void opDivAssign(Vec3!T rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; }
     void opModAssign(Vec3!T rhs) { x %= rhs.x; y %= rhs.y; z %= rhs.z; }
+
+static if(!isFloatingPoint!T) {
+    auto opAnd(T s) const        { return Vec3!T(x&s, y&s, z&s); }
+    auto opAnd(Vec3!T rhs) const { return Vec3!T(x&rhs.x, y&rhs.y, z&rhs.z); }
+    void opAndAssign(T s)        { x &= s;     y &= s;     z &= s; }
+    void opAndAssign(Vec3!T rhs) { x &= rhs.x; y &= rhs.y; z &= rhs.z; }
+
+    auto opOr(T s) const         { return Vec3!T(x|s, y|s, z|s); }
+    auto opOr(Vec3!T rhs) const  { return Vec3!T(x|rhs.x, y|rhs.y, z|rhs.z); }
+    void opOrAssign(T s)         { x |= s;     y |= s;     z |= s; }
+    void opOrAssign(Vec3!T rhs)  { x |= rhs.x; y |= rhs.y; z |= rhs.z; }
+
+    auto opXor(T s) const        { return Vec3!T(x^s, y^s, z^s); }
+    auto opXor(Vec3!T rhs) const { return Vec3!T(x^rhs.x, y^rhs.y, z^rhs.z); }
+    void opXorAssign(T s)        { x ^= s;     y ^= s;     z ^= s; }
+    void opXorAssign(Vec3!T rhs) { x ^= rhs.x; y ^= rhs.y; z ^= rhs.z; }
+}
 
     bool anyLT(T v) const { return x<v || y<v || z<v; }
     bool anyLTE(T v) const { return x<=v || y<=v || z<=v; }
