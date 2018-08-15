@@ -93,17 +93,6 @@ pragma(inline,true) {
         a ^= ((a << 23)) + p[3];
         return a;
     }
-
-    Vec4!T opBinary(string op)(int i) const {
-        static if(isFloatingPoint!T) {
-            static assert(0, "Operator "~op~" for type %s not implemented".format(T.stringof));
-        } else {
-            static if(op=="<<" || op==">>") {
-                return mixin("Vec4!T(x"~op~"i,y"~op~"i,z"~op~"i,w"~op~"i)");
-            }
-            else static assert(0, "Operator "~op~" for type %s not implemented".format(T.stringof));
-        }
-    }
  
 	auto opNeg() const { return Vec4!T(-x, -y, -z, -w); }
 	auto opAdd(T s) const { return Vec4!T(x+s, y+s, z+s, w+s); }
@@ -128,20 +117,29 @@ pragma(inline,true) {
 	void opDivAssign(Vec4!T rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; w /= rhs.w; }
 
 static if(!isFloatingPoint!T) {
-	auto opAnd(T s) const        { return Vec4!T(x&s,     y&s,     z&s,     w&s); }
-	auto opAnd(Vec4!T rhs) const { return Vec4!T(x&rhs.x, y&rhs.y, z&rhs.z, w&rhs.w); }
-	void opAndAssign(T s)        { x &= s;     y &= s;     z &= s;     w &= s; }
-	void opAndAssign(Vec4!T rhs) { x &= rhs.x; y &= rhs.y; z &= rhs.z; w &= rhs.w; }
-
-	auto opOr(T s) const         { return Vec4!T(x|s,     y|s,     z|s,     w|s); }
-	auto opOr(Vec4!T rhs) const  { return Vec4!T(x|rhs.x, y|rhs.y, z|rhs.z, w|rhs.w); }
-	void opOrAssign(T s)         { x |= s;     y |= s;     z |= s;     w |= s; }
-	void opOrAssign(Vec4!T rhs)  { x |= rhs.x; y |= rhs.y; z |= rhs.z; w |= rhs.w; }
-
-	auto opXor(T s) const        { return Vec4!T(x^s,     y^s,     z^s,     w^s); }
-	auto opXor(Vec4!T rhs) const { return Vec4!T(x^rhs.x, y^rhs.y, z^rhs.z, w^rhs.w); }
-	void opXorAssign(T s)        { x ^= s;     y ^= s;     z ^= s;     w ^= s; }
-	void opXorAssign(Vec4!T rhs) { x ^= rhs.x; y ^= rhs.y; z ^= rhs.z; w ^= rhs.w; }
+    Vec4!T opBinary(string op)(T s) const {
+        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+            return mixin("Vec4!T(x"~op~"s,y"~op~"s,z"~op~"s,w"~op~"s)");
+        }
+        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+    }
+    Vec4!T opBinary(string op)(Vec4!T rhs) const {
+        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+            return mixin("Vec4!T(x"~op~"rhs.x,y"~op~"rhs.y,z"~op~"rhs.z,w"~op~"rhs.w)");
+        }
+        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+    }
+    void opOpAssign(string op)(T s) {
+        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+            mixin("x"~op~"=s; y"~op~"=s; z"~op~"=s; w"~op~"=s;");
+        }
+        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+    }
+    void opOpAssign(string op)(Vec4!T rhs) {
+        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+            mixin("x"~op~"=rhs.x; y"~op~"=rhs.y; z"~op~"=rhs.z; w"~op~"=rhs.w;");
+        } else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+    }
 }
 
     bool anyLT(T v) const { return x<v || y<v || z<v || w<v; }
