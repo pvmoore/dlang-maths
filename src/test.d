@@ -597,6 +597,42 @@ void testVector4() {
                 int4(0b0001,0b0010,0b0011,0b0100))
              == int4(0b1011,0b1000,0b1001,0b1110));
     }
+	{   // allLT
+		auto v = int4(1,2,3,4);
+        assert(v.allLT(5));
+        assert(!v.allLT(4));
+
+        assert(v.allLT(int4(2,3,4,5)));
+        assert(!v.allLT(int4(1,2,3,4)));
+	}
+    {   // allLTE
+        auto v = int4(1,2,3,4);
+        assert(v.allLTE(5));
+        assert(v.allLTE(4));
+        assert(!v.allLTE(3));
+
+        assert(v.allLTE(int4(2,3,4,5)));
+        assert(v.allLTE(int4(1,2,3,4)));
+        assert(!v.allLTE(int4(0,1,2,3)));
+    }
+    {   // allGT
+        auto v = int4(1,2,3,4);
+        assert(v.allGT(0));
+        assert(!v.allGT(1));
+
+        assert(v.allGT(int4(0,1,2,3)));
+        assert(!v.allGT(int4(1,2,3,4)));
+    }
+    {   // allGTE
+        auto v = int4(1,2,3,4);
+        assert(v.allGTE(0));
+        assert(v.allGTE(1));
+        assert(!v.allGTE(2));
+
+        assert(v.allGTE(int4(0,1,2,3)));
+        assert(v.allGTE(int4(1,2,3,4)));
+        assert(!v.allGTE(int4(2,3,4,5)));
+    }
 }
 
 void testMatrix4() {

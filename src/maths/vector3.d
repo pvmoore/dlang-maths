@@ -166,14 +166,23 @@ static if(!isFloatingPoint!T) {
     }
 }
 
-    bool anyLT(T v) const { return x<v || y<v || z<v; }
+    bool anyLT(T v) const  { return x<v || y<v || z<v; }
     bool anyLTE(T v) const { return x<=v || y<=v || z<=v; }
-    bool anyGT(T v) const { return x>v || y>v || z>v; }
+    bool anyGT(T v) const  { return x>v || y>v || z>v; }
     bool anyGTE(T v) const { return x>=v || y>=v || z>=v; }
-    bool anyLT(Vec3!T v) const { return x<v.x || y<v.y || z<v.z; }
+    bool anyLT(Vec3!T v) const  { return x<v.x || y<v.y || z<v.z; }
     bool anyLTE(Vec3!T v) const { return x<=v.x || y<=v.y || z<=v.z; }
-    bool anyGT(Vec3!T v) const { return x>v.x || y>v.y || z>v.z; }
+    bool anyGT(Vec3!T v) const  { return x>v.x || y>v.y || z>v.z; }
     bool anyGTE(Vec3!T v) const { return x>=v.x || y>=v.y || z>=v.z; }
+
+	bool allLT(T v) const  { return x<v && y<v && z<v; }
+    bool allLTE(T v) const { return x<=v && y<=v && z<=v; }
+    bool allGT(T v) const  { return x>v && y>v && z>v; }
+    bool allGTE(T v) const { return x>=v && y>=v && z>=v; }
+    bool allLT(Vec3!T v) const  { return x<v.x && y<v.y && z<v.z; }
+    bool allLTE(Vec3!T v) const { return x<=v.x && y<=v.y && z<=v.z; }
+    bool allGT(Vec3!T v) const  { return x>v.x && y>v.y && z>v.z; }
+    bool allGTE(Vec3!T v) const { return x>=v.x && y>=v.y && z>=v.z; }
 
     T hadd() const { return x+y+z; }
     T hmul() const { return x*y*z; }
