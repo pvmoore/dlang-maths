@@ -6,7 +6,7 @@ const MULT 			= 62089911;
 const INV_FLOAT_MAX = 1.0f / 0xffff_ffff;
 
 /**
- * Fast RNG with good distribution.
+ * Fast RNG with good distribution (between 0 and 1)
  */
 final class FastRNG {
 private:

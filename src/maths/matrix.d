@@ -1,7 +1,7 @@
 module maths.matrix;
 /* ====================================================================================================================
 	An M x N matrix implementation.
-	
+
 	M = number of rows
 	N = number of columns
 ==================================================================================================================== */
@@ -12,12 +12,12 @@ public:
 	T[] m;
 	const uint M;
 	const uint N;
-		
+
 	this(uint rows, uint cols)				{ M = rows; N = cols; m.length = M*N; }
 	this(uint m, uint n, T initialValue) 	{ this(m, n); this.setValue(initialValue); }
 	this(Matrix o) 							{ this(o.numRows(), o.numColumns()); this.copy(o); }
-	this(uint rows, uint cols, T[] cells) 	{ this(rows, cols); this.set(cells); }	
-	
+	this(uint rows, uint cols, T[] cells) 	{ this(rows, cols); this.set(cells); }
+
 	uint numRows() 			{ return M; }
 	uint numColumns() 		{ return N; }
 	uint totalCells() 		{ return M*N; }
@@ -25,7 +25,7 @@ public:
 	//float* column(uint i) 	{ return &m[i][0]; }
 	//float[] column(uint i) 	{ return m[i]; }
 	//T[] row(uint i)		{ return m[i]; }
-	
+
 	void setIdentity() {
 		setValue(0);
 		uint minDim = M < N ? M : N;
@@ -33,19 +33,19 @@ public:
 			m[i*N + i] = 1;
 		}
 	}
-	
+
 	void setValue(T value) {
 		m[] = cast(T)value;
 	}
-	
+
 	void set(T[] cells) {
 		m[] = cast(T[])cells[];
 	}
-	
+
 	void copy(Matrix o) {
 		m = o.m.dup;
 	}
-	
+
 	/**
 	 * Returns the transposed form of this matrix.<br>
 	 * The rows and columns are simply swapped.<br>
@@ -70,7 +70,7 @@ public:
 		}
 		return mat;
 	}
-	
+
 	/**
 	 * Returns: The inverse of this matrix (A<sup>-1</sup>)<br>
 	 * A * A<sup>-1</sup> = I where I is the identity matrix.
@@ -90,9 +90,9 @@ public:
 			} else if(M==2) {
 				return new Matrix!T(M, N, [
 				    m[3]*d, -m[1]*d,
-				    -m[2]*d, m[0]*d 
-				    ]);                        
-			} 
+				    -m[2]*d, m[0]*d
+				    ]);
+			}
 			return new Matrix!T(M, N, [ (m[1*N+1]*m[2*N+2]-m[1*N+2]*m[2*N+1])*d, -(m[0*N+1]*m[2*N+2]-m[0*N+2]*m[2*N+1])*d, (m[0*N+1]*m[1*N+2]-m[0*N+2]*m[1*N+1])*d,
 			                           -(m[1*N+0]*m[2*N+2]-m[1*N+2]*m[2*N+0])*d,  (m[0*N+0]*m[2*N+2]-m[0*N+2]*m[2*N+0])*d,-(m[0*N+0]*m[1*N+2]-m[0*N+2]*m[1*N+0])*d,
 			                            (m[1*N+0]*m[2*N+1]-m[1*N+1]*m[2*N+0])*d, -(m[0*N+0]*m[2*N+1]-m[0*N+1]*m[2*N+0])*d, (m[0*N+0]*m[1*N+1]-m[0*N+1]*m[1*N+0])*d
@@ -104,7 +104,7 @@ public:
 		T[] col;	col.length = N;
 		int[] permutation;
 		decomposeLU(lu, permutation);
-		
+
 		for(int j=0; j<M; j++) {
 			col[]  = cast(T)0;
 			col[j] = cast(T)1;
@@ -118,10 +118,10 @@ public:
 
 		return inv;
 	}
-	
+
 	/**
 	 * Returns: The determinant of this matrix.<br>
-	 * <b>Note:</b>The matrix must be square. 
+	 * <b>Note:</b>The matrix must be square.
 	 */
 	T getDeterminant() {
 		//assert(M==N);
@@ -136,146 +136,104 @@ public:
 		           m[1*N + 0]*m[0*N + 1]*m[2*N + 2] +
 		           m[2*N + 0]*m[0*N + 1]*m[1*N + 2] -
 		           m[2*N + 0]*m[1*N + 1]*m[0*N + 2];
-		} 
+		}
 		// we are going to have to do some serious maths now
 		Matrix lu;
 		int[] permutation;
 		return decomposeLU(lu, permutation);
 	}
-	
+
 	override string toString() {
-		string s; 
+		string s;
 		for(uint r=0; r<M; r++) {
 			for(uint c=0; c<N; c++) {
 				//s ~= formatReal(cast(T)m[r*N + c]);
-				s ~= format("%s",m[r*N + c]); 
+				s ~= format("%s",m[r*N + c]);
 				if(c<N-1) s ~= "  ";
 			}
 			s ~= "\n";
 		}
-		
+
 		return s;
 	}
-	
+
 	bool opEquals(T[] cells) {
 		return m[] == cast(T[])cells[];
 	}
-	
+
 	bool opEquals(Matrix!T o) {
 		return m[] == o.m[];
 	}
-	
+
 	// ------------------------------------------------------------------------------------------------------------------
 	// indexing
 	// ------------------------------------------------------------------------------------------------------------------
-	
+
 	T opIndex(uint r, uint c) {
 		return m[r*N + c];
 	}
-	
+
 	T opIndexAssign(T value, uint index) {
 		return m[index] = cast(T)value;
 	}
-	
+
 	T opIndexAssign(T value, uint r, uint c) {
 		return m[r*N + c] = cast(T)value;
 	}
-	
+
 	// ------------------------------------------------------------------------------------------------------------------
 	// operators
 	// ------------------------------------------------------------------------------------------------------------------
-	
-	auto opAdd(T s) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = m[] + cast(T)s;
-		return mat;
+
+	Matrix!T opBinary(string op)(T s) const {
+		static if(op=="+" || op=="-" || op=="*" || op=="/") {
+			auto mat = new Matrix!T(M, N);
+			mixin("mat.m[] = m[] "~op~" cast(T)s;");
+			return mat;
+		} else static assert(false, "Matrix!%s %s %s is not implemented".format(T.stringof, op, T.stringof));
 	}
-	
-	auto opAdd(Matrix o) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = o.m[] + m[]; 
-		return mat;
-	}
-	
-	void opAddAssign(T s) {
-		m[] += cast(T)s;
-	}
-	
-	void opAddAssign(Matrix o) {
-		m[] += o.m[];
-	}
-	
-	auto opSub(T s) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = m[] - cast(T)s;
-		return mat;
-	}
-	
-	auto opSub(Matrix o) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = o.m[] - m[]; 
-		return mat;
-	}
-	
-	void opSubAssign(T s) {
-		m[] -= cast(T)s;
-	}
-	
-	void opSubAssign(Matrix o) {
-		m[] -= o.m[];
-	}
-	
-	auto opMul(T s) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = m[] * cast(T)s;
-		return mat;
-	}
-	
-	auto opMul(Matrix o) {
-		//assert(N==o.M);
-		auto mat = new Matrix!T(M, N, 0);
-		for(int r=0; r<M; r++) {
-			for(int c=0; c<N; c++) {
-				for(int k=0; k<N; k++) {
-					mat.m[r*N+c] += m[r*N+k] * o.m[k*o.N+c]; 
+	Matrix!T opBinary(string op)(Matrix o) const {
+		static if(op=="+" || op=="-") {
+			auto mat = new Matrix!T(M, N);
+			mixin("mat.m[] = o.m[] "~op~" m[];");
+			return mat;
+		} else static if(op=="*") {
+			auto mat = new Matrix!T(M, N, 0);
+			for(int r=0; r<M; r++) {
+				for(int c=0; c<N; c++) {
+					for(int k=0; k<N; k++) {
+						mat.m[r*N+c] += m[r*N+k] * o.m[k*o.N+c];
+					}
 				}
 			}
-		}
-		return mat;
+			return mat;
+		} else static assert(false, "Matrix!%s %s Matrix!%s is not implemented".format(T.stringof, op, T.stringof));
 	}
-	
-	void opMulAssign(T s) {
-		m[] *= cast(T)s;
+	void opOpAssign(string op)(T s) {
+		static if(op=="+" || op=="-" || op=="*" || op=="/") {
+			mixin("m[] "~op~"= cast(T)s;");
+		} else static assert(false, "Matrix!%s %s= %s is not implemented".format(T.stringof, op, T.stringof));
 	}
-	
-	void opMulAssign(Matrix o) {
-		//assert(N==o.M);
-		auto mat = new Matrix!T(M, N, 0);
-		for(int r=0; r<M; r++) {
-			for(int c=0; c<N; c++) {
-				for(int k=0; k<N; k++) {
-					mat.m[r*N+c] += m[r*N+k] * o.m[k*o.N+c]; 
+	void opOpAssign(string op)(Matrix o) {
+		static if(op=="+" || op=="-") {
+			mixin("m[] "~op~"= cast(T)s;");
+		} else static if(op=="*") {
+			auto mat = new Matrix!T(M, N, 0);
+			for(int r=0; r<M; r++) {
+				for(int c=0; c<N; c++) {
+					for(int k=0; k<N; k++) {
+						mat.m[r*N+c] += m[r*N+k] * o.m[k*o.N+c];
+					}
 				}
 			}
-		}
-		this.copy(mat);
+			this.copy(mat);
+		} else static assert(false, "Matrix!%s %s= Matrix!%s is not implemented".format(T.stringof, op, T.stringof));
 	}
-	
-	auto opDiv(T s) {
-		auto mat = new Matrix!T(M, N);
-		mat.m[] = m[] / cast(T)s;
-		return mat;
-	}
-	
-	auto opDivAssign(T s) {
-		T r = 1/s;
-		m[] *= cast(T)r;
-	}
-	
+
 	// ------------------------------------------------------------------------------------------------------------------
 	// private
 	// ------------------------------------------------------------------------------------------------------------------
-	
+
 	/**
 	 * Perform the backsubstitution to solve Ax = b for x.
 	 */
@@ -333,7 +291,7 @@ public:
 			}
 			vv[i] = cast(T)(1.0/big);
 		}
-	  
+
 		for(j=0; j<N; j++) {
 			for(i=0; i<j; i++) {
 				sum = lu.m[i*N+j];
@@ -341,7 +299,7 @@ public:
 				lu.m[i*N+j] = cast(T)sum;
 			}
 			big = cast(T)0.0;
-			
+
 			for(i=j; i<N; i++) {
 				sum = lu.m[i*N+j];
 				for(k=0; k<j; k++) {
@@ -353,7 +311,7 @@ public:
 					imax = i;
 				}
 			}
-			
+
 			if(j != imax) {
 				for(k=0; k<N; k++) {
 					dum = lu.m[imax*N+k];
@@ -363,7 +321,7 @@ public:
 				count++;
 				vv[imax] = vv[j];
 			}
-			
+
 			permutation[j] = imax;
 			if(lu.m[j*N+j] == 0.0)
 				m[j*N+j] = cast(T)T.min_normal; //cast(T)1.0e-11;
@@ -374,14 +332,14 @@ public:
 					lu.m[i*N+j] *= dum;
 			}
 		}
-		
-		T result = (count&1) ? -1 : 1; 
+
+		T result = (count&1) ? -1 : 1;
 	    for(j = 0; j < N; j++) {
 	    	result *= cast(T)lu.m[j*N + j];
 	    }
 	    return result;
 	}
-	
+
 	// slow version of getting the determinant
 	T determinantSlow(T[] mat, int n) {
 		T result = 0;
@@ -393,22 +351,22 @@ public:
 		}
 		for(int i = 0; i < n; i++) {
 			int nn = n-1;
-			T[] temp; temp.length = nn*nn; 
-	
+			T[] temp; temp.length = nn*nn;
+
 			for(int j = 1; j < n; j++) {
 				for(int k = 0; k < n; k++) {
-		
+
 				if(k < i) {
 					temp[(j - 1)*nn + k] = mat[j*n + k];
 				} else if(k > i) {
 					temp[(j - 1)*nn + (k - 1)] = mat[j*n + k];
 				}
-		
+
 				}
 			}
 			result += mat[0*n+i] * pow(-1.0, i) * determinantSlow(temp, nn);
 		}
 		return result;
-	} 
+	}
 }
 

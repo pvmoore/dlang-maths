@@ -2,7 +2,9 @@ module maths.vector2;
 
 import maths.all;
 
-final struct Vec2(T) if(isSupportedVecType!T) {
+
+
+struct Vec2(T) if(isSupportedVecType!T) {
 	T x=0,y=0;
 
 	string toString(float dp=5) const {
@@ -19,7 +21,7 @@ final struct Vec2(T) if(isSupportedVecType!T) {
 		x = y = v;
 	}
 	this(T x, T y) {
-		this.x = x; this.y = y; 
+		this.x = x; this.y = y;
 	}
 
 pragma(inline,true) {
@@ -68,53 +70,39 @@ pragma(inline,true) {
         return a;
     }
 
-	auto opNeg() const { return Vec2!T(-x, -y); }
-	auto opAdd(T s) const { return Vec2!T(x+s, y+s); }
-	auto opSub(T s) const { return Vec2!T(x-s, y-s); }
-	auto opMul(T s) const { return Vec2!T(x*s, y*s); }
-	auto opDiv(T s) const { return Vec2!T(x/s, y/s); }
-	auto opMod(T s) const { return Vec2!T(x%s, y%s); }
-
-	auto opAdd(Vec2!T rhs) const { return Vec2!T(x+rhs.x, y+rhs.y); }
-	auto opSub(Vec2!T rhs) const { return Vec2!T(x-rhs.x, y-rhs.y); }
-	auto opMul(Vec2!T rhs) const { return Vec2!T(x*rhs.x, y*rhs.y); }
-	auto opDiv(Vec2!T rhs) const { return Vec2!T(x/rhs.x, y/rhs.y); }
-
-	void opAddAssign(T s) { x += s; y += s; }
-	void opSubAssign(T s) { x -= s; y -= s; }
-	void opMulAssign(T s) { x *= s; y *= s; }
-	void opDivAssign(T s) { opMulAssign(1/s); }
-
-	void opAddAssign(Vec2!T rhs) { x += rhs.x; y += rhs.y; }
-	void opSubAssign(Vec2!T rhs) { x -= rhs.x; y -= rhs.y; }
-	void opMulAssign(Vec2!T rhs) { x *= rhs.x; y *= rhs.y; }
-	void opDivAssign(Vec2!T rhs) { x /= rhs.x; y /= rhs.y; }
-
-static if(!isFloatingPoint!T) {
+    auto opUnary(string op)() {
+        static if(op == "-") {
+            return Vec2!T(-x, -y);
+        } else assert(false, "Unary operator "~op~" for type %s not implemented".format(T.stringof));
+    }
     Vec2!T opBinary(string op)(T s) const {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec2!T(x"~op~"s,y"~op~"s)");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     Vec2!T opBinary(string op)(Vec2!T rhs) const {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec2!T(x"~op~"rhs.x,y"~op~"rhs.y)");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     void opOpAssign(string op)(T s) {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             mixin("x"~op~"=s; y"~op~"=s;");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     void opOpAssign(string op)(Vec2!T rhs) {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             mixin("x"~op~"=rhs.x; y"~op~"=rhs.y;");
-        } else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
-}
 
     bool anyLT(T v) const  { return x<v || y<v; }
     bool anyLTE(T v) const { return x<=v || y<=v; }

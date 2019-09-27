@@ -2,7 +2,7 @@ module maths.vector3;
 
 import maths.all;
 
-final struct Vec3(T) if(isSupportedVecType!T) {
+struct Vec3(T) if(isSupportedVecType!T) {
 	T x=0,y=0,z=0;
 
 	string toString(float dp=5) const {
@@ -19,7 +19,7 @@ nothrow:
         x=y=z=v;
     }
 	this(T x, T y, T z) {
-		this.x = x; this.y = y; this.z = z; 
+		this.x = x; this.y = y; this.z = z;
 	}
 	this(Vec2!T v, T z) {
 		this(v.x, v.y, z);
@@ -38,7 +38,7 @@ static if(isFloatingPoint!T) {
 		Vec3!T obj,
 		ref Mat4!T view,
 		ref Mat4!T proj,
-		Rect viewport) 
+		Rect viewport)
 	{
 		auto tmp = Vec4!T(obj, 1);
 		tmp = view * tmp;
@@ -53,7 +53,7 @@ static if(isFloatingPoint!T) {
 	static Vec3!T unProject(
 		Vec3!T screenPos,
 		ref Mat4!T invViewProj,	// (proj * view).inversed()
-		Rect viewport) 
+		Rect viewport)
 	{
 		auto tmp = Vec4!T(screenPos, 1);
 		tmp.x = (tmp.x - viewport.x) / viewport.width;
@@ -87,8 +87,8 @@ pragma(inline,true) {
 	T opIndex(int i) const { assert(i >= 0 && i<3); return (&x)[i]; }
 	T opIndexAssign(T value, int i) { assert(i >= 0 && i<3); ptr[i] = value; return value; }
 }
-	bool opEquals(T[] array) const { 
-		return opEquals(Vec3!T(array[0], array[1], array[2])); 
+	bool opEquals(T[] array) const {
+		return opEquals(Vec3!T(array[0], array[1], array[2]));
 	}
 	bool opEquals(inout Vec3!T o) const {
 		if(!approxEqual!(T, T)(x, o.x)) return false;
@@ -115,56 +115,39 @@ pragma(inline,true) {
         return a;
     }
 
-	auto opNeg() const { return Vec3!T(-x, -y, -z); }
-	auto opAdd(T s) const { return Vec3!T(x+s, y+s, z+s); }
-	auto opSub(T s) const { return Vec3!T(x-s, y-s, z-s); }
-	auto opMul(T s) const { return Vec3!T(x*s, y*s, z*s); }
-	auto opDiv(T s) const { return Vec3!T(x/s, y/s, z/s); }
-    auto opMod(T s) const { return Vec3!T(x%s, y%s, z%s); }
-
-	auto opAdd(Vec3!T rhs) const { return Vec3!T(x+rhs.x, y+rhs.y, z+rhs.z); }
-	auto opSub(Vec3!T rhs) const { return Vec3!T(x-rhs.x, y-rhs.y, z-rhs.z); }
-	auto opMul(Vec3!T rhs) const { return Vec3!T(x*rhs.x, y*rhs.y, z*rhs.z); }
-	auto opDiv(Vec3!T rhs) const { return Vec3!T(x/rhs.x, y/rhs.y, z/rhs.z); }
-    auto opMod(Vec3!T rhs) const { return Vec3!T(x%rhs.x, y%rhs.y, z%rhs.z); }
-
-	void opAddAssign(T s) { x += s; y += s; z += s; }
-	void opSubAssign(T s) { x -= s; y -= s; z -= s; }
-	void opMulAssign(T s) { x *= s; y *= s; z *= s; }
-	void opDivAssign(T s) { opMulAssign(1/s); }
-    void opModAssign(T s) { x %= s; y %= s; z %= s; }
-
-	void opAddAssign(Vec3!T rhs) { x += rhs.x; y += rhs.y; z += rhs.z; }
-	void opSubAssign(Vec3!T rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; }
-	void opMulAssign(Vec3!T rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; }
-	void opDivAssign(Vec3!T rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; }
-    void opModAssign(Vec3!T rhs) { x %= rhs.x; y %= rhs.y; z %= rhs.z; }
-
-static if(!isFloatingPoint!T) {
+	auto opUnary(string op)() {
+        static if(op == "-") {
+            return Vec3!T(-x, -y, -z);
+        } else assert(false, "Unary operator "~op~" for type %s not implemented".format(T.stringof));
+    }
     Vec3!T opBinary(string op)(T s) const {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec3!T(x"~op~"s,y"~op~"s,z"~op~"s)");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     Vec3!T opBinary(string op)(Vec3!T rhs) const {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec3!T(x"~op~"rhs.x,y"~op~"rhs.y,z"~op~"rhs.z)");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     void opOpAssign(string op)(T s) {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
             mixin("x"~op~"=s; y"~op~"=s; z"~op~"=s;");
-        }
-        else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
     void opOpAssign(string op)(Vec3!T rhs) {
-        static if(op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>") {
-            mixin("x"~op~"=rhs.x; y"~op~"=rhs.y; z"~op~"=rhs.z;");
-        } else static assert(false, "Operator "~op~" for type %s not implemented".format(T.stringof));
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
+           	mixin("x"~op~"=rhs.x; y"~op~"=rhs.y; z"~op~"=rhs.z;");
+        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
     }
-}
 
     bool anyLT(T v) const  { return x<v || y<v || z<v; }
     bool anyLTE(T v) const { return x<=v || y<=v || z<=v; }

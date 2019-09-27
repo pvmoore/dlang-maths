@@ -64,13 +64,13 @@ float distanceFromLine(
 	float l2 = linevec.magnitudeSquared;  // i.e. |w-v|^2 -  avoid a sqrt
 	if(l2==0) return pointvec.magnitude;   // v == w case
 	// Consider the line extending the segment, parameterized as v + t (w - v).
-	// We find projection of point p onto the line. 
+	// We find projection of point p onto the line.
 	// It falls where t = [(p-v) . (w-v)] / |w-v|^2
 	float t = pointvec.dot(linevec) / l2;
 	if(t < 0) return pointvec.magnitude;    // Beyond the 'v' end of the segment
 	else if(t > 1) return (p-w).magnitude;  // Beyond the 'w' end of the segment
 	// 0 <= t <=1
-	Vector2 projection = v + t * linevec;  // Projection falls on the segment
+	Vector2 projection = v + linevec * t;  // Projection falls on the segment
 	return (projection-p).magnitude;
 }
 
@@ -85,7 +85,7 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 	} else if(decimalPlaces > 12) {
 		decimalPlaces = 12;
 	}
-	
+
 	// handle negative
 	if(r<0) {
 		pre = "-";
@@ -93,10 +93,10 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 	}
 	// round up
 	r += (0.5 / pow(10, decimalPlaces));
-	
+
 	// calculate remainder
 	real rr = r - cast(long)r;
-	
+
 	// before decimal point
 	if(r<1) {
 		s1 ~= "0";
@@ -106,7 +106,7 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 			r /= 10;
 		}
 	}
-	
+
 	// after decimal point
 	if(decimalPlaces != 0) {
 		int i=0;
@@ -117,7 +117,7 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 			rr -= val;
 			i++;
 		}
-		
+
 		if(removeTrailing) {
 			// remove any excess right hand side zeros
 			while(s2.length>0) {
@@ -127,10 +127,10 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 			}
 		}
 	}
-	
+
 	auto reversed = s1.dup;
 	reverse(reversed);
-	
+
 	if(s2.length==0) {
 		return (pre ~ reversed).idup;
 	}

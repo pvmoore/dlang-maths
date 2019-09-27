@@ -23,3 +23,12 @@ template isSupportedVecType(T) {
         is(T==long) ||
         is(T==ulong);
 }
+template isIntOnlyVectorBinaryOp(string op) {
+    const bool isIntOnlyVectorBinaryOp =
+        op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>";
+}
+template isSupportedVectorBinaryOp(string op) {
+    const bool isSupportedVectorBinaryOp =
+        op=="&" || op=="|" || op=="^" || op=="<<" || op==">>" || op==">>>" ||
+        op=="+" || op=="-" || op=="*" || op=="/" || op=="%";
+}

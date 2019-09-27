@@ -2,9 +2,9 @@ module maths.matrix4;
 
 import maths.all;
 
-final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
+struct Mat4(T) if(isFloatingPoint!T && isSupportedVecType!T) {
 	/* column major format (openGL style)
-	  [0] [1] [2] [3]		
+	  [0] [1] [2] [3]
 		0   4   8  12		[0][0]	[1][0]	[2][0]	[3][0]
 		1   5   9  13		[0][1]	[1][1]	[2][1]	[3][1]
 		2   6  10  14		[0][2]	[1][2]	[2][2]	[3][2]
@@ -146,7 +146,7 @@ final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
 	}
 	static Mat4!T ortho(T left, T right,
 						T bottom, T top,
-						T zNear, T zFar) 
+						T zNear, T zFar)
 	{
 		auto result = Mat4!T.identity();
 		result[0][0] =  2.0f / (right - left);
@@ -185,7 +185,6 @@ final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
 		return result;
 	}
 
-
 	T* ptr() { return cast(T*)c.ptr; }
 
 	void setTranslation(T x, T y, T z) {
@@ -204,75 +203,56 @@ final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
 	bool opEquals(Mat4!T m) const {
 		return c[0] == m[0] && c[1] == m[1] && c[2] == m[2] && c[3] == m[3];
 	}
-
-	ref Vec4!T opIndex(int i) { assert(i>=0 && i<4); return c[i]; } 
-
-    Mat4!T opAdd(T s) const {
-		Mat4!T copy = this;
-		copy[0] += s;
-		copy[1] += s;
-		copy[2] += s;
-		copy[3] += s;
-		return copy;
-    }
-	Mat4!T opSub(T s) const {
-		Mat4!T copy = this;
-		copy[0] -= s;
-		copy[1] -= s;
-		copy[2] -= s;
-		copy[3] -= s;
-		return copy;
-    }
-	Mat4!T opMul(T s) const {
-		Mat4!T copy = this;
-		copy[0] *= s;
-		copy[1] *= s;
-		copy[2] *= s;
-		copy[3] *= s;
-		return copy;
-    }
-	Mat4!T opDiv(T s) const {
-		return opMul(1.0f/s);
-    }
-
-	Mat4!T opMul(ref Mat4!T o) const {
-		Mat4!T result = Mat4!T.init;
-		result[0] = c[0] * o[0][0] + c[1] * o[0][1] + c[2] * o[0][2] + c[3] * o[0][3];
-		result[1] = c[0] * o[1][0] + c[1] * o[1][1] + c[2] * o[1][2] + c[3] * o[1][3];
-		result[2] = c[0] * o[2][0] + c[1] * o[2][1] + c[2] * o[2][2] + c[3] * o[2][3];
-		result[3] = c[0] * o[3][0] + c[1] * o[3][1] + c[2] * o[3][2] + c[3] * o[3][3];
-		return result;
-	}
-	Vec4!T opMul(Vec4!T v) const {
-		return c[0] * v.x +
-			   c[1] * v.y +
-			   c[2] * v.z +
-			   c[3] * v.w;
+	size_t toHash() const @trusted {
+		return c[0].toHash() ^
+			   c[1].toHash() * 7 +
+			   c[2].toHash() * 13 ^
+			   c[3].toHash() * 19;
 	}
 
-	/// check this
-	Mat4!T opDiv(ref Mat4!T o) const {
-		auto inv = o.inversed;
-		return this * inv;
+	ref Vec4!T opIndex(int i) { assert(i>=0 && i<4); return c[i]; }
+
+	Mat4!T opBinary(string op)(T s) const {
+		static if(op=="+" || op=="-" || op=="*") {
+			Mat4!T copy = this;
+			mixin("copy[0] "~op~"= s;");
+			mixin("copy[1] "~op~"= s;");
+			mixin("copy[2] "~op~"= s;");
+			mixin("copy[3] "~op~"= s;");
+			return copy;
+		} else static if(op=="/") {
+			return opBinary!"*"(1.0f/s);
+		} else static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
 	}
-
-	Mat4!T opAdd(ref Mat4!T o) const {
-		Mat4!T result = Mat4!T.init;
-		result[0] = c[0] + o[0];
-		result[1] = c[1] + o[1];
-		result[2] = c[2] + o[2];
-		result[3] = c[3] + o[3];
-    	return result;
-    }
-
-	Mat4!T opSub(ref Mat4!T o) const {
-		Mat4!T result = Mat4!T.init;
-		result[0] = c[0] - o[0];
-		result[1] = c[1] - o[1];
-		result[2] = c[2] - o[2];
-		result[3] = c[3] - o[3];
-    	return result;
-    }
+	Mat4!T opBinary(string op)(ref Mat4!T o) const {
+		static if(op=="*") {
+			Mat4!T result = Mat4!T.init;
+			result[1] = c[0] * o[1][0] + c[1] * o[1][1] + c[2] * o[1][2] + c[3] * o[1][3];
+			result[2] = c[0] * o[2][0] + c[1] * o[2][1] + c[2] * o[2][2] + c[3] * o[2][3];
+			result[3] = c[0] * o[3][0] + c[1] * o[3][1] + c[2] * o[3][2] + c[3] * o[3][3];
+			result[0] = c[0] * o[0][0] + c[1] * o[0][1] + c[2] * o[0][2] + c[3] * o[0][3];
+			return result;
+		} else static if(op=="+" || op=="-") {
+			Mat4!T result = Mat4!T.init;
+			mixin("result[0] = c[0] "~op~" o[0];");
+			mixin("result[1] = c[1] "~op~" o[1];");
+			mixin("result[2] = c[2] "~op~" o[2];");
+			mixin("result[3] = c[3] "~op~" o[3];");
+			return result;
+		} else static if(op=="/") {
+			// check this
+			auto inv = o.inversed;
+			return this * inv;
+		} else static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+	}
+	Vec4!T opBinary(string op)(Vec4!T v) const {
+		static if(op=="*") {
+			return c[0] * v.x +
+				   c[1] * v.y +
+				   c[2] * v.z +
+				   c[3] * v.w;
+		} else static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+	}
 
 	Mat4!T transposed() const {
 		return Mat4!T.rowMajor(
@@ -303,7 +283,7 @@ final struct Mat4 (T) if(isFloatingPoint!T && isSupportedVecType!T) {
 		result.c[3][0] = -d * (c[1][0] * (c[2][1] * c[3][2] - c[3][1] * c[2][2]) + c[2][0] * (c[3][1] * c[1][2] - c[1][1] * c[3][2]) + c[3][0] * (c[1][1] * c[2][2] - c[2][1] * c[1][2]));
 		result.c[3][1] =  d * (c[0][0] * (c[2][1] * c[3][2] - c[3][1] * c[2][2]) + c[2][0] * (c[3][1] * c[0][2] - c[0][1] * c[3][2]) + c[3][0] * (c[0][1] * c[2][2] - c[2][1] * c[0][2]));
 		result.c[3][2] = -d * (c[0][0] * (c[1][1] * c[3][2] - c[3][1] * c[1][2]) + c[1][0] * (c[3][1] * c[0][2] - c[0][1] * c[3][2]) + c[3][0] * (c[0][1] * c[1][2] - c[1][1] * c[0][2]));
-		result.c[3][3] =  d * (c[0][0] * (c[1][1] * c[2][2] - c[2][1] * c[1][2]) + c[1][0] * (c[2][1] * c[0][2] - c[0][1] * c[2][2]) + c[2][0] * (c[0][1] * c[1][2] - c[1][1] * c[0][2])); 
+		result.c[3][3] =  d * (c[0][0] * (c[1][1] * c[2][2] - c[2][1] * c[1][2]) + c[1][0] * (c[2][1] * c[0][2] - c[0][1] * c[2][2]) + c[2][0] * (c[0][1] * c[1][2] - c[1][1] * c[0][2]));
 		return result;
 	}
 
@@ -331,6 +311,27 @@ static Mat4!T ortho(T left, T right,
 		result[3][2] = - (zFar + zNear) / (zFar - zNear);
 		return result;
 	}
+*/
+
+/*
+vulkan orthoLH from joml
+        MemUtil.INSTANCE.identity(this);
+        this._m00(2.0f / (right - left));
+        this._m11(2.0f / (top - bottom));
+        this._m22(1.0f / (zFar - zNear));
+        this._m30((right + left) / (left - right));
+        this._m31((top + bottom) / (bottom - top));
+        this._m32(zNear / (zNear - zFar));
+
+vulkan ortho RH
+        MemUtil.INSTANCE.identity(this);
+        this._m00(2.0f / (right - left));
+        this._m11(2.0f / (top - bottom));
+        this._m22(1.0f / (zNear - zFar));
+        this._m30((right + left) / (left - right));
+        this._m31((top + bottom) / (bottom - top));
+        this._m32(zNear / (zNear - zFar));
+
 */
 /// works on Vulkan
 Mat4!T vkOrtho(T)(T left, T right,

@@ -102,13 +102,12 @@ void main() {
 
 }
 void testNoise() {
-    NoiseFunction2D noise;
-    FastRNG rng = new FastRNG();
+	PerlinNoise2D noise = new PerlinNoise2D(10,10).generate();
     StopWatch w;
     w.start();
     for(auto i=0; i<1; i++) {
         // test here
-
+		writefln("noise=%s", noise.get());
     }
     w.stop();
     writefln("Noise took %s millis", w.peek().total!"nsecs"/1000000.0);
@@ -161,17 +160,17 @@ void benchAABB() {
 /*void bench() {
 	import std.random : uniform;
 	const shift = 1L<<(64-9);
-	auto dir = Vector3(uniform(-100.0, 100.0), 
-			  		   uniform(-100.0, 100.0), 
+	auto dir = Vector3(uniform(-100.0, 100.0),
+			  		   uniform(-100.0, 100.0),
 					   uniform(-100.0, 100.0)).normalised();
-	long dirX = cast(long)((cast(double)dir.x)*shift); 
+	long dirX = cast(long)((cast(double)dir.x)*shift);
 	long dirY = cast(long)((cast(double)dir.y)*shift);
 	long dirZ = cast(long)((cast(double)dir.z)*shift);
 	writefln("dir=%s", dir);
-	//writefln("int dir=%s,%s,%s",dirX,dirY,dirZ); 
+	//writefln("int dir=%s,%s,%s",dirX,dirY,dirZ);
 
 	auto v = Vector3(0,0,0);	// 560 - 570
-	long x,y,z;					// 
+	long x,y,z;					//
 
 	StopWatch watch;
 	watch.start();
@@ -180,7 +179,7 @@ void benchAABB() {
 			v = Vector3(0);
 			x = y = z = 0;
 			for(auto j=0;j<256;j++) {
-				v += dir;	
+				v += dir;
 
 				x += dirX;
 				y += dirY;
@@ -252,7 +251,7 @@ void testVector2() {
 	assert(Vector2(0,1).rotated(90.degrees).angle.degrees == 90);
 	assert(approxEqual(Vector2(0,1).rotated(180.degrees).angle.degrees, -180));	// equivalent to 180
 	assert(Vector2(0,1).rotated(270.degrees).angle.degrees == -90);
-	
+
 	// left
 	assert(Vector2(0,1).left == Vector2(-1,0));
 	writefln("%s", Vector2(0.7071, 0.7071).left);
@@ -412,7 +411,7 @@ void testVector4() {
 
 	// ==
 	assert(Vector4(1,2,3,4) == Vector4(1,2,3,4));
-	assert(Vector4(1) != Vector4(2));	   
+	assert(Vector4(1) != Vector4(2));
 	assert(Vector4(1,2,3,4) == [1f,2,3,4]);
 	assert(Vector4(1,2,3,4) != [1f,0,3,4]);
 
@@ -515,7 +514,7 @@ void testVector4() {
 
 	// magnitude
 	Vector4 v23 = Vector4(1,2,3,4);
-	assert(v23.magnitude >= 5.47722 && v23.magnitude <= 5.47723);	
+	assert(v23.magnitude >= 5.47722 && v23.magnitude <= 5.47723);
 
 	// inverse magnitude
 	Vector4 v24 = Vector4(1,2,3,4);
@@ -1034,7 +1033,7 @@ void testUtil() {
 	assert("124" ==formatReal(123.5, 0));
 	assert("64"==formatReal(64.000));
 
-	StopWatch watch; 
+	StopWatch watch;
 	watch.start();
 	auto m = Matrix4.rowMajor(
 		10,-2,3,4,
