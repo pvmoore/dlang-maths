@@ -1,8 +1,11 @@
-module maths.random.tentfilter;
+module maths.random.random_buffer;
 
 import maths.all;
 
-final class TentFilter {
+/**
+ * Pre-populated random number buffer with distribution between 0 and 1
+ */
+final class RandomBuffer {
 private:
     float[] values;
     uint index;
@@ -13,14 +16,12 @@ public:
         assert(numValues!=0, "Num values must not be 0");
         assert(popcnt(numValues)==1, "Num values must be a power of 2");
 
-        this.values.length = numValues;
         this.mask          = numValues-1;
-
+        this.values.length = numValues;
         auto rng = Mt19937(seed);
 
         foreach(ref v; values) {
-            float r = uniform(0f, 2f, rng);
-            v = r<1 ? sqrt(r)-1 : 1-sqrt(2-r);
+            v = uniform(0f, 1f, rng);
         }
     }
     float next() {
@@ -28,5 +29,3 @@ public:
         return values[i&mask];
     }
 }
-
-

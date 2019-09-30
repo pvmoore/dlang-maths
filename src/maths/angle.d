@@ -15,7 +15,7 @@ Angle!float radians(float d) pure {
     return Angle!float(d);
 }
 //=========================================================
-final struct Angle(T) {
+struct Angle(T) {
     T radians;
 
     string toString() {

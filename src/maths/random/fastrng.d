@@ -12,7 +12,7 @@ final class FastRNG {
 private:
 	ulong m_seed;
 public:
-	this(ulong seed = unpredictableSeed) {
+	this(ulong seed = unpredictableSeed()) {
 		m_seed = seed;
 	}
 

@@ -4,22 +4,20 @@ import maths.all;
 /**
  *  Axis-aligned bounding box.
  */
-final struct AABB {
+struct AABB {
 public:
 	Vector3[2] pp;
 
 	string toString() {
-		return "[BBox %s -> %s]".format(pp[0], pp[1]);
+		return "AABB(%s -> %s)".format(pp[0], pp[1]);
 	}
 	static struct Intersection { float near; float far; }
 nothrow:
-    pragma(inline,true) {
-    @property Vector3 min() { return pp[0]; }
-	@property Vector3 max() { return pp[1]; }
-	@property Vector3 middle() {
+    Vector3 min() { return pp[0]; }
+	Vector3 max() { return pp[1]; }
+	Vector3 middle() {
 	    return pp[0]+(pp[1]-pp[0])*0.5;
     }
-	}
 
 	this(Vector3 a, Vector3 b) {
 		set(a,b);
@@ -42,12 +40,26 @@ nothrow:
         pp[1].z = .max(pp[1].z, v.z);
         return this;
 	}
+    auto enclose(AABB b) {
+	    enclose(b.min);
+	    enclose(b.max);
+	    return this;
+	}
 	auto enclose(ref AABB b) {
 	    enclose(b.min);
 	    enclose(b.max);
 	    return this;
 	}
-	/// Returns true if ray intersects this box.
+    uint longestAxis() {
+        auto x = pp[1].x - pp[0].x;
+        auto y = pp[1].y - pp[0].y;
+        auto z = pp[1].z - pp[0].z;
+        return (x>y && x>z) ? 0 : y>z ? 1 : 2;
+    }
+    /*
+     *  @param
+     *  @return true if ray intersects this box.
+     */
     bool intersect(const ref Ray r,
                    const float tmin,
                    const float tmax)
@@ -55,8 +67,10 @@ nothrow:
         Intersection i;
         return inner(r, tmin, tmax, i);
     }
-	/// Returns true if ray intersects this box.
-	/// tnear is the entry point
+    /*
+     *  @param tnear is the entry point if the ray enters the box
+     *  @return true if ray intersects this box.
+     */
     bool intersect(const ref Ray r,
                    ref float tnear,
                    const float tmin,
@@ -92,27 +106,23 @@ private:
                float tmax,
                ref Intersection i)
     {
-	    int posneg;
         float t0;
         float t1;
 
-        posneg = r.direction.x < 0;
-        t0 = (pp[posneg].x - r.origin.x) * r.invDirection.x;
-        t1 = (pp[1-posneg].x - r.origin.x) * r.invDirection.x;
+        t0 = (pp[  r.posneg.x].x - r.origin.x) * r.invDirection.x;
+        t1 = (pp[1-r.posneg.x].x - r.origin.x) * r.invDirection.x;
         if(t0>tmin) tmin = t0;
         if(t1<tmax) tmax = t1;
         if(tmin > tmax) return false;
 
-        posneg = r.direction.y < 0;
-        t0 = (pp[posneg].y - r.origin.y) * r.invDirection.y;
-        t1 = (pp[1-posneg].y - r.origin.y) * r.invDirection.y;
+        t0 = (pp[  r.posneg.y].y - r.origin.y) * r.invDirection.y;
+        t1 = (pp[1-r.posneg.y].y - r.origin.y) * r.invDirection.y;
         if(t0>tmin) tmin = t0;
         if(t1<tmax) tmax = t1;
         if(tmin > tmax) return false;
 
-        posneg = r.direction.z < 0;
-        t0 = (pp[posneg].z - r.origin.z) * r.invDirection.z;
-        t1 = (pp[1-posneg].z - r.origin.z) * r.invDirection.z;
+        t0 = (pp[  r.posneg.z].z - r.origin.z) * r.invDirection.z;
+        t1 = (pp[1-r.posneg.z].z - r.origin.z) * r.invDirection.z;
         if(t0>tmin) tmin = t0;
         if(t1<tmax) tmax = t1;
         if(tmin > tmax) return false;

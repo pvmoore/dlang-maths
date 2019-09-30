@@ -1,8 +1,8 @@
 
-import std.stdio		: writefln;
-import std.math			: approxEqual;
-import std.datetime.stopwatch		: StopWatch;
-import std.random       : uniform;
+import std.stdio				: writefln;
+import std.math					: approxEqual;
+import std.datetime.stopwatch	: StopWatch;
+import std.random       		: uniform;
 import maths.all;
 
 void main() {
@@ -50,7 +50,6 @@ void main() {
 
 	//bench();
 	//benchAABB();
-	//testRandom();
 
 
     {
@@ -99,7 +98,9 @@ void main() {
     testHalfFloat();
 
 	testNoise();
-
+	testRandom();
+	testRandomBuffer();
+	testRandomNoise3D();
 }
 void testNoise() {
 	PerlinNoise2D noise = new PerlinNoise2D(10,10).generate();
@@ -113,6 +114,7 @@ void testNoise() {
     writefln("Noise took %s millis", w.peek().total!"nsecs"/1000000.0);
 }
 void testRandom() {
+	writefln("Testing random ...");
     auto r = new FastRNG();
     StopWatch w;
     w.start();
@@ -128,6 +130,40 @@ void testRandom() {
     writefln("average = %s", total/iterations);
     writefln("buckets=%s", buckets);
     writefln("Elapsed %s millis", w.peek().total!"nsecs"/1000000.0);
+}
+void testRandomBuffer() {
+	writefln("Testing RandomBuffer ...");
+
+	auto rb = new RandomBuffer(1024);
+	for(auto i=0; i<1024; i++) {
+		auto value = rb.next();
+		assert(value>=0.0f);
+		assert(value<1.0f);
+	}
+
+	writefln("OK");
+}
+void testRandomNoise3D() {
+	writefln("Testing RandomNoise3D ...");
+
+	uint[20] distribution;
+
+	auto noise = new RandomNoise3D(1024);
+	for(auto i=0; i<1024; i++) {
+		auto x = uniform(-10f, 10f);
+		auto y = uniform(-1f, 1f);
+		auto z = uniform(-3f, 1f);
+
+		auto v = noise.get(x,y,z);
+
+		distribution[cast(uint)(v*20)]++;
+
+		writefln("v=%s", v);
+	}
+
+	writefln("Distribution = %s", distribution);
+
+	writefln("OK");
 }
 void benchAABB() {
     AABB box = AABB(

@@ -21,27 +21,37 @@ interface NoiseFunction3D {
     float get(vec3 v);
 }
 
+/* pre-generates white noise in the range [0..1] */
 final class RandomNoise3D : NoiseFunction3D {
+private:
     float[] values;
-    this(uint numValues) {
+    uint mask;
+public:
+    this(uint numValues, uint seed = unpredictableSeed()) {
+        import core.bitop : popcnt;
+        assert(numValues!=0, "Num values must not be 0");
+        assert(popcnt(numValues)==1, "Num values must be a power of 2");
+
+        auto rng           = Mt19937(seed);
+        this.mask          = numValues-1;
         this.values.length = numValues;
         foreach(ref v; values) {
-            v = uniform(0f, 2f);
+            v = uniform(0f, 1f, rng);
         }
     }
     float get(Vector3 v) {
         return get(v.x, v.y, v.z);
     }
     float get(float x, float y, float z) {
-        uint ix = cast(uint)(x*10);
-        uint iy = cast(uint)(y*10);
-        uint iz = cast(uint)(z*10);
+        uint ix = cast(uint)(x*100);
+        uint iy = cast(uint)(y*100);
+        uint iz = cast(uint)(z*100);
         //uint hash = x^y^z;
         uint hash = 17;
         hash ^= 31 + ix;
         hash *= 31 + iy;
         hash ^= 31 + iz;
-        return values[hash%values.length];
+        return values[hash&mask];
     }
 }
 

@@ -3,7 +3,7 @@ module maths.noise.perlin;
 import maths.all;
 
 final class PerlinNoise2D : NoiseFunction2D {
-    FastRNG rng;
+    Mt19937 rng;
     uint width, height;
     float persistence = 0.5f;
     uint octaveCount  = 7;
@@ -13,13 +13,13 @@ public:
     this(uint width, uint height) {
         this.width  = width;
         this.height = height;
-        this.rng    = new FastRNG();
+        this.rng    = Mt19937(unpredictableSeed());
         this.whiteNoise.length  = width*height;
         this.perlinNoise.length = width*height;
         generateWhiteNoise();
     }
-    auto setSeed(ulong s) {
-        rng = new FastRNG(s);
+    auto setSeed(uint s) {
+        rng = Mt19937(s);
         generateWhiteNoise();
         return this;
     }
@@ -81,7 +81,7 @@ private:
     }
     void generateWhiteNoise() {
         for(auto i = 0; i<whiteNoise.length; i++) {
-            whiteNoise[i] = rng.next();
+            whiteNoise[i] = rng.front();
         }
     }
     float[] generateSmoothNoise(int octave) {

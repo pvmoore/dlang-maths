@@ -2,11 +2,12 @@ module maths.geom.ray;
 
 import maths.all;
 
-final struct Ray {
+struct Ray {
 public:
 	Vector3 origin;
 	Vector3 direction;
 	Vector3 invDirection;
+	uint3 posneg;			// 0=positive, 1=negative
 
 	string toString() {
 		return "[Ray %s -> %s]".format(origin, direction);
@@ -26,6 +27,7 @@ nothrow:
     void setDirection(Vector3 d) {
         direction    = d;
         invDirection = d.reciprocalOf();
+		posneg       = uint3(direction.x<0, direction.y<0, direction.z<0);
     }
 	void copyTo(ref Ray toRay) const {
 		toRay.origin 		= this.origin;
