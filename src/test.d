@@ -93,7 +93,6 @@ void main() {
 	testMultiplyByMatrix();
 	testInverse();
 	testProject();
-	testUtil();
 	testTrigonomety();
     testHalfFloat();
 
@@ -101,6 +100,8 @@ void main() {
 	testRandom();
 	testRandomBuffer();
 	testRandomNoise3D();
+
+	testUtil();
 }
 void testNoise() {
 	PerlinNoise2D noise = new PerlinNoise2D(10,10).generate();
@@ -1085,8 +1086,11 @@ void testUtil() {
 	writefln("r=%s", r);
 
     // factorsOf
-    writefln("factorsOf(32)==%s", 32.factorsOf);
-    assert(32.factorsOf==[32, 16, 8, 4, 2, 1]);
+	import std.algorithm.sorting : sort;
+	import std.range : array;
+	writefln("factorsOf(32)==%s", (32.factorsOf).sort().array());
+    assert((32.factorsOf).sort().array()==[1,2,4,8,16,32]);
+	assert((10.factorsOf).sort().array()==[1,2,5,10]);
 
     // test min
     assert(min(0,1,2)==0);
@@ -1102,6 +1106,15 @@ void testUtil() {
         assert(entropyBits(4,1024)==8);
         writefln("%s", entropyBits(1,3));
     }
+
+	{	// isPrime
+		foreach(v; [1,2,3,5,7,11,13,17,19,23]) {
+			assert(isPrime(v));
+		}
+		foreach(v; [0,4,6,8,9,10,12,14,15,16,18,20,21,22]) {
+			assert(isPrime(v)==false);
+		}
+	}
 }
 void testTrigonomety() {
     writefln("testing trigonometry");

@@ -137,17 +137,30 @@ string formatReal(real r, uint decimalPlaces=uint.max) {
 	return (pre ~ reversed ~ "." ~ s2).idup;
 }
 
-T[] factorsOf(T)(T n) pure nothrow {
-    // this is not the best way of doing this
-    T[] factors;
-    factors.reserve(n/2);
-    T i = n;
-    while(i>0) {
-        if((n%i)==0) factors ~= i;
-        i--;
-    }
-    return factors;
+T[] factorsOf(T)(T n) if(is(T : long)) {
+	T[] factors;
+    T i = 1;
+	while(i*i <= n) {
+		if((n%i)==0) {
+			factors ~= i;
+			if(n/i!=i) factors ~= n/i;
+		}
+		i++;
+	}
+	return factors;
 }
+bool isPrime(ulong n) {
+	if(n==0) return false;
+	if(n<4) return true;
+
+	auto i = 2L;
+	while(i*i <= n) {
+		if((n%i)==0) return false;
+		i++;
+	}
+	return true;
+}
+
 /**
  *  Return the number of bits required to store
  *  _value_ given a total set of size _total_.
