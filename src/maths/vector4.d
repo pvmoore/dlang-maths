@@ -73,11 +73,15 @@ pragma(inline,true) {
 	bool opEquals(T[] array) const { return x==array[0] && y==array[1] && z==array[2] && w==array[3]; }
 
 	bool opEquals(inout Vec4!T o) const {
-		if(!approxEqual!(T, T)(x, o.x)) return false;
-		if(!approxEqual!(T, T)(y, o.y)) return false;
-		if(!approxEqual!(T, T)(z, o.z)) return false;
-		if(!approxEqual!(T, T)(w, o.w)) return false;
-		return true;
+        static if(isFloatingPoint!T) {
+            if(!approxEqual!(T, T)(x, o.x)) return false;
+            if(!approxEqual!(T, T)(y, o.y)) return false;
+            if(!approxEqual!(T, T)(z, o.z)) return false;
+            if(!approxEqual!(T, T)(w, o.w)) return false;
+            return true;
+        } else {
+            return x==o.x && y==o.y && z==o.z && w==o.w;
+        }
 	}
 	size_t toHash() const @trusted {
         static if(T.sizeof==4) {

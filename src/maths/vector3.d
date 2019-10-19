@@ -27,6 +27,9 @@ nothrow:
 	this(T x, Vec2!T yz) {
         this(x, yz.x, yz.y);
     }
+	this(Vec3!T v) {
+		this(v.x, v.y, z);
+	}
 
     /// v.to!double;
     Vec3!B to(B)() const {
@@ -91,10 +94,14 @@ pragma(inline,true) {
 		return opEquals(Vec3!T(array[0], array[1], array[2]));
 	}
 	bool opEquals(inout Vec3!T o) const {
-		if(!approxEqual!(T, T)(x, o.x)) return false;
-		if(!approxEqual!(T, T)(y, o.y)) return false;
-		if(!approxEqual!(T, T)(z, o.z)) return false;
-		return true;
+		static if(isFloatingPoint!T) {
+			if(!approxEqual!(T, T)(x, o.x)) return false;
+			if(!approxEqual!(T, T)(y, o.y)) return false;
+			if(!approxEqual!(T, T)(z, o.z)) return false;
+			return true;
+		} else {
+			return x==o.x && y==o.y && z==o.z;
+		}
 	}
 	//size_t toHash() @trusted const {
 	//	uint* p = cast(uint*)&x;
