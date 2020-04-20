@@ -81,7 +81,7 @@ private:
     }
     void generateWhiteNoise() {
         for(auto i = 0; i<whiteNoise.length; i++) {
-            whiteNoise[i] = rng.front();
+            whiteNoise[i] = uniform(0.0f, 1.0f, rng);
         }
     }
     float[] generateSmoothNoise(int octave) {
