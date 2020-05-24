@@ -48,6 +48,20 @@ pragma(inline, true)
 T max(T)(T a, T b, T c, T d) pure nothrow {
     return max(a, max(b,c,d));
 }
+
+T minOf(T)(T[] array...) {
+	if(array.length==1) return array[0];
+	T v = array[0];
+	foreach(t; array[1..$]) { if(t < v) v = t; }
+	return v;
+}
+T maxOf(T)(T[] array...) {
+	if(array.length==1) return array[0];
+	T v = array[0];
+	foreach(t; array[1..$]) { if(t > v) v = t; }
+	return v;
+}
+
 pragma(inline,true)
 float signum(float f) {
     return f==0 ? 0 : f>0 ? 1 : -1;
