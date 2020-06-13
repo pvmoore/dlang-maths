@@ -25,16 +25,16 @@ final class Camera3D {
 private:
 
 public:
-	Vector3 position() { return _position; }
-	Vector3 up() { return _up; }
-	Vector3 forward() { return _forward; }
-	Vector3 right() { return _forward.right(_up); }
-	Vector3 focalPoint() { return _position+_forward*_focalLength; }
-	Dimension windowSize() { return _windowSize; }
-    float aspectRatio() { return _windowSize.width/_windowSize.height; }
-    Angle!float fov() { return _fov; }
-    float near() { return _near; }
-    float far() { return _far; }
+	Vector3 position() 		{ return _position; }
+	Vector3 up() 			{ return _up; }
+	Vector3 forward() 		{ return _forward; }
+	Vector3 right() 		{ return _forward.right(_up); }
+	Vector3 focalPoint() 	{ return _position+_forward*_focalLength; }
+	Dimension windowSize() 	{ return _windowSize; }
+    float aspectRatio() 	{ return _windowSize.width/_windowSize.height; }
+    Angle!float fov() 		{ return _fov; }
+    float near() 			{ return _near; }
+    float far() 			{ return _far; }
 
 	override string toString() {
 		return "[Camera pos:%s forward:%s up:%s"
@@ -50,10 +50,10 @@ public:
 	}
 	/**
 	 * Assumption 1:
-	 *  Resize will be called to set the windowSize before use.
+	 *    Resize will be called to set the windowSize before use.
 	 * Assumption 2:
-	 *  Up vector is _forward rotated by the X-axis by
-	 *  90 degrees. Use pitch to change the _up vector later.
+	 *    Up vector is _forward rotated by the X-axis by
+	 *    90 degrees. Use pitch to change the _up vector later.
 	 */
 	this(Vector3 pos, Vector3 focalPoint) {
         this._windowSize  = Dimension(0,0);
@@ -151,11 +151,15 @@ public:
 	ref Matrix4 P() {
 		if(recalculateProj) {
 		    if(mode==Mode.VULKAN)
-		        proj = vkPerspective(
+				/**
+				* Near and far planes reversed to allow for more accurate depth buffer
+				* using near plane of 1.0 and a far plane of 0.0
+				*/
+		        proj = vkPerspectiveRH(
                         _fov,
                         _windowSize.width / _windowSize.height,
-                        _near,
-                        _far);
+                        _far,
+						_near);
             else
                 proj = Matrix4.perspective(
                         _fov,

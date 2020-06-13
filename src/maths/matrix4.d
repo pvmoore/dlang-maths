@@ -95,6 +95,9 @@ struct Mat4(T) if(isFloatingPoint!T && isSupportedVecType!T) {
 		m[1][1] = C;
 		return m;
 	}
+	/**
+	 *	Rotate around vector v.
+	 */
 	static Mat4!T rotate(Vec3!T v, Angle!T angle) {
 	    const radians = angle.radians;
 		T C = cos(radians);
@@ -124,6 +127,37 @@ struct Mat4(T) if(isFloatingPoint!T && isSupportedVecType!T) {
 		result[3] = m[3];
 		return result;
 	}
+	/*
+	 *	| cosY*cosZ						| cosY*-sinZ						| sinY			| 0
+	 *	| -sinX*-sinY*cosZ + cosX*sinZ	| -sinX*-sinY*-sinZ + cosX*cosZ		| -sinX*cosY	| 0
+	 *	| cosX*-sinY*cosZ + sinX*sinZ	| cosX*-sinY*-sinZ + sinX*cosZ		| cosX*cosY		| 0
+	 *	| 0								| 0									| 0				| 1
+	 */
+	static Mat4!T rotate(Angle!T x, Angle!T y, Angle!T z) {
+		Mat4!T m = Mat4!T.identity();
+
+		T cosX = cos(x.radians);
+		T cosY = cos(y.radians);
+		T cosZ = cos(z.radians);
+		T sinX = sin(x.radians);
+		T sinY = sin(y.radians);
+		T sinZ = sin(z.radians);
+
+		m[0][0] = cosY*cosZ;
+		m[0][1] = -sinX*-sinY*cosZ + cosX*sinZ;
+		m[0][2] = cosX*-sinY*cosZ + sinX*sinZ;
+
+		m[1][0] = cosY*-sinZ;
+		m[1][1] = -sinX*-sinY*-sinZ + cosX*cosZ;
+		m[1][2] = cosX*-sinY*-sinZ + sinX*cosZ;
+
+		m[2][0] = sinY;
+		m[2][1] = -sinX*cosY;
+		m[2][2] = cosX*cosY;
+
+		return m;
+	}
+
 	static Mat4!T lookAt(Vec3!T eye, Vec3!T centre, Vec3!T up) {
 		auto f = (centre - eye).normalised();
 		auto s = f.cross(up).normalised();
@@ -347,15 +381,37 @@ Mat4!T vkOrtho(T)(T left, T right,
     result[3][2] = -zNear / (zFar - zNear);
     return result;
 }
-Mat4!T vkPerspective(T)(Angle!T fov, T aspect, T zNear, T zFar) {
+
+// Mat4!T vkPerspective(T)(Angle!T fov, T aspect, T zNear, T zFar) {
+//     T tanHalfFov = tan(fov.radians / 2.0f);
+
+//     auto result = Mat4!T(0);
+//     result[0][0] = 1.0f / (aspect * tanHalfFov);
+//     result[1][1] = 1.0f / (tanHalfFov);
+//     result[2][2] = zFar / (zFar - zNear);
+//     //result[2][2] = zFar / (zNear - zFar);    // uncomment this if you need LH
+//     result[2][3] = - 1.0f;
+//     result[3][2] = -(zFar * zNear) / (zFar - zNear);
+//     return result;
+// }
+
+/**
+ * h = tan(fov/2)
+ * a = width/height
+ *
+ *  1/(h*a)	0 	  0 			 0
+ *  0 		1/h   0 			 0
+ *  0 		0 	  far/(near-far) 0
+ *  0 		0 	  -1 			 far*near/(near-far)
+ */
+Mat4!T vkPerspectiveRH(T)(Angle!T fov, T aspect, T zNear, T zFar) {
     T tanHalfFov = tan(fov.radians / 2.0f);
 
     auto result = Mat4!T(0);
     result[0][0] = 1.0f / (aspect * tanHalfFov);
-    result[1][1] = 1.0f / (tanHalfFov);
-    result[2][2] = zFar / (zFar - zNear);
-    //result[2][2] = zFar / (zNear - zFar);    // uncomment this if you need LH
+    result[1][1] = 1.0f / tanHalfFov;
+    result[2][2] = zFar / (zNear - zFar);
     result[2][3] = - 1.0f;
-    result[3][2] = -(zFar * zNear) / (zFar - zNear);
+    result[3][2] = zFar * zNear / (zNear - zFar);
     return result;
 }
