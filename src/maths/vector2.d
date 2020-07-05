@@ -150,7 +150,15 @@ pragma(inline,true) {
             .max(y, o.y)
         );
     }
-
+    /**
+     * if A and B are unit vectors:
+     * A B           A            A |
+     * ^ ^           ^            ^ |
+     * | |           |            | |
+     * | |           |            | v
+     * | |     <-----|------> B   | B
+     * A.B = 1    A.B = 0         A.B = -1
+     */
 	T dot(Vec2!T rhs) const {
 		return (x*rhs.x) + (y*rhs.y);
 	}

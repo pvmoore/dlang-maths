@@ -7,6 +7,10 @@ import maths.all;
 
 void main() {
 
+	testVector2();
+	float ffff = 0;
+	if(ffff < 1) return;
+
     {
         vec2 windowSize = vec2(1000, 600);
         float width  = windowSize.width  * 1;
@@ -235,6 +239,8 @@ void benchAABB() {
 }*/
 
 void testVector2() {
+	writefln("Testing Vector2 ::::::::::::::::::::::::::::::::::::::::::::::::");
+
 	auto v1 = Vector2(1,2);
 	auto v2 = Vector2(2,1);
 	writefln("Vector2(1,2) hash=%16x", v1.toHash);
@@ -347,6 +353,22 @@ void testVector2() {
     // opBinary
     auto v15 = Vec2!uint(1,2);
     assert(v15 << 1 == [2,4]);
+
+	{	// dot
+		float2 a = float2(0,1);  // up
+		float2 b = float2(1,0);  // right
+		float2 c = float2(0,-1); // down
+		float2 d = float2(-1,0); // left
+
+		writefln("a.a = %s", a.dot(a));	// 1
+		writefln("a.b = %s", a.dot(b)); // 0
+		writefln("a.c = %s", a.dot(c)); // -1
+		writefln("a.d = %s", a.dot(d)); // 0
+		assert(a.dot(a) == 1);
+		assert(a.dot(b) == 0);
+		assert(a.dot(c) == -1);
+		assert(a.dot(d) == 0);
+	}
 }
 void testVector3() {
     writefln("Test Vec3");
