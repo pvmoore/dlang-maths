@@ -49,14 +49,19 @@ T max(T)(T a, T b, T c, T d) pure nothrow {
     return max(a, max(b,c,d));
 }
 
-T minOf(T)(T[] array...) {
+T minOf(T)(T[] array...)
+	if(__traits(compiles,"T a; T b; bool c = a<b;"))
+{
 	if(array.length==1) return array[0];
 	T v = array[0];
 	foreach(t; array[1..$]) { if(t < v) v = t; }
 	return v;
 }
-T maxOf(T)(T[] array...) {
+T maxOf(T)(T[] array...)
+	if(__traits(compiles,"T a; T b; bool c = a<b;"))
+{
 	if(array.length==1) return array[0];
+
 	T v = array[0];
 	foreach(t; array[1..$]) { if(t > v) v = t; }
 	return v;

@@ -242,3 +242,21 @@ static if(isFloatingPoint!T) {
 	}
 }
 
+Vec2!T minOf(T)(Vec2!T[] others) {
+    assert(others.length > 0);
+
+    auto lowest = others[0];
+    foreach(v; others[1..$]) {
+        lowest = lowest.min(v);
+    }
+    return lowest;
+}
+Vec2!T maxOf(T)(Vec2!T[] others) {
+    assert(others.length > 0);
+
+    auto highest = others[0];
+    foreach(v; others[1..$]) {
+        highest = highest.max(v);
+    }
+    return highest;
+}
