@@ -196,8 +196,6 @@ public:
 		return viewProj;
 	}
 	ref Matrix4 inverseVP() {
-		// ensure we have a valid viewProj
-		VP();
 		if(recalculateInvViewProj) {
 			invViewProj = VP().inversed();
 			recalculateInvViewProj = false;

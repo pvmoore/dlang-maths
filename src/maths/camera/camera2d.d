@@ -20,9 +20,11 @@ private:
 	Matrix4 view	 = Matrix4.identity;
 	Matrix4 proj	 = Matrix4.identity;
 	Matrix4 viewProj = Matrix4.identity;
+	mat4 invViewProj = mat4.identity;
 	bool recalculateView = true;
 	bool recalculateProj = true;
 	bool recalculateViewProj = true;
+	bool recalculateInvViewProj = true;
 public:
 	float zoomFactor() { return 1/_zoomFactor; }
 	Vector2 position() { return _position; }
@@ -117,6 +119,7 @@ public:
 
 			recalculateProj = false;
 			recalculateViewProj = true;
+			recalculateInvViewProj = true;
 		}
 		return proj;
 	}
@@ -129,6 +132,7 @@ public:
 			);
 			recalculateView = false;
 			recalculateViewProj = true;
+			recalculateInvViewProj = true;
 		}
 		return view;
 	}
@@ -138,8 +142,27 @@ public:
 			P();
 			viewProj = proj * view;
 			recalculateViewProj = false;
+			recalculateInvViewProj = true;
 		}
 		return viewProj;
 	}
+	ref mat4 invVP() {
+		if(recalculateInvViewProj) {
+			invViewProj = VP().inversed();
+			recalculateInvViewProj = false;
+		}
+		return invViewProj;
+	}
+	/**
+	 *	Convert from screen coords eg. a mouse position to world coords.
+	 */
+	float2 screenToWorld(float2 screenPos) {
+        float invScreenY = (_windowSize.height - screenPos.y);
+        return Vector3.unProject(
+            Vector3(screenPos, 0),
+            invVP(),
+            Rect(Point(0f,0f), _windowSize.to!float)
+        ).xy();
+    }
 }
 
