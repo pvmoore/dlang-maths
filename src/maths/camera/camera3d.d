@@ -80,6 +80,11 @@ public:
         c.mode = Mode.VULKAN;
         return c;
     }
+	static Camera3D forVulkan(Vector3 pos, Vector3 focalPoint) {
+        auto c = new Camera3D(pos, focalPoint);
+        c.mode = Mode.VULKAN;
+        return c;
+    }
     auto vulkanMode() {
         mode = Mode.VULKAN;
         return this;
