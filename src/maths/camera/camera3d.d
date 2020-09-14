@@ -201,6 +201,9 @@ public:
 		return viewProj;
 	}
 	ref Matrix4 inverseVP() {
+		// ensure viewProj is up to date
+		VP();
+
 		if(recalculateInvViewProj) {
 			invViewProj = VP().inversed();
 			recalculateInvViewProj = false;
