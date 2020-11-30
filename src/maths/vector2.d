@@ -184,6 +184,52 @@ pragma(inline,true) {
 	auto abs() const {
         return Vec2!T(.abs(x), .abs(y));
     }
+
+static if(isFloatingPoint!T) {
+
+    void floor() {
+        import std.math : floor;
+        this.x = floor(x);
+        this.y = floor(y);
+    }
+    void ceil() {
+        import std.math : ceil;
+        this.x = ceil(x);
+        this.y = ceil(y);
+    }
+    void truncate() {
+        import std.math : trunc;
+        this.x = trunc(x);
+        this.y = trunc(y);
+    }
+    void fract() {
+        import std.math : floor;
+        this.x -= floor(x);
+        this.y -= floor(y);
+    }
+    auto floored() {
+        import std.math : floor;
+        return Vec2!T(floor(x), floor(y));
+    }
+    auto ceiled() {
+        import std.math : ceil;
+        return Vec2!T(ceil(x), ceil(y));
+    }
+    /**
+     *  Return truncated version eg. (1.25, 10.4) --> (1, 10)
+     */
+    auto truncated() const {
+        import std.math : trunc;
+        return Vec2!T(trunc(x), trunc(y));
+    }
+    /**
+     *  Return fractional components eg. (1.25, 10.4) --> (0.25, 0.4)
+     */
+    auto fract() const {
+        return Vec2!T(x,y) - truncated();
+    }
+}
+
 static if(isFloatingPoint!T) {
 	/// assumes 0 is up (0,1). degrees = v.toRadians.toDegrees;
 	Angle!T angle() const {

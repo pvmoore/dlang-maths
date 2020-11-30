@@ -14,7 +14,7 @@ struct Vec4(T) if(isSupportedVecType!T) {
         return fmt.format(x, y, z, w);
     }
 nothrow:
-@nogc:
+//@nogc:
 	this(T v) {
 		x = y = z = w = v;
 	}

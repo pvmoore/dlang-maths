@@ -6,10 +6,15 @@ import std.random       		: uniform;
 import maths.all;
 
 void main() {
+	writefln("Testing...\n");
 
-	testVector2();
+	testSimd();
 	float ffff = 0;
 	if(ffff < 1) return;
+
+	// testVector2();
+	// float ffff = 0;
+	// if(ffff < 1) return;
 
     {
         vec2 windowSize = vec2(1000, 600);
@@ -106,6 +111,38 @@ void main() {
 	testRandomNoise3D();
 
 	testUtil();
+
+	writefln("Finished");
+}
+void load(float4 a) {
+	version(DigitalMars) {
+	asm pure nothrow @nogc {
+		movups XMM0, a;
+	}
+	}
+}
+void testSimd() {
+	writefln("Testing SIMD");
+
+	load(float4(2,2,2,2));
+
+	version(DigitalMars) {
+		float4 a = float4(0,0,0,0);
+		float4 b = float4(1,1,1,1);
+		float4 z = float4(0,0,0,0);
+
+		asm pure nothrow @nogc {
+			movups XMM0, b;
+			vmovups XMM1, XMM0;
+			movups z, XMM0;
+		}
+
+		writefln("z = %s", z);
+	}
+	version(LDC) {
+
+	}
+	writefln("Done");
 }
 void testNoise() {
 	PerlinNoise2D noise = new PerlinNoise2D(10,10).generate();
