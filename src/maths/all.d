@@ -12,6 +12,8 @@ import std.math   :
     abs, cos, floor, sin, tan, pow,
     sqrt, acos, asin, atan, approxEqual, atan2;
 
+import common : dumpGPR, dumpXMM_PS, dumpXMM_PD;
+
 import maths;
 
 template isSupportedVecType(T) {

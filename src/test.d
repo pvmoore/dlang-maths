@@ -8,7 +8,6 @@ import maths.all;
 void main() {
 	writefln("Testing...\n");
 
-	testSimd();
 	float ffff = 0;
 	if(ffff < 1) return;
 
@@ -114,36 +113,7 @@ void main() {
 
 	writefln("Finished");
 }
-void load(float4 a) {
-	version(DigitalMars) {
-	asm pure nothrow @nogc {
-		movups XMM0, a;
-	}
-	}
-}
-void testSimd() {
-	writefln("Testing SIMD");
 
-	load(float4(2,2,2,2));
-
-	version(DigitalMars) {
-		float4 a = float4(0,0,0,0);
-		float4 b = float4(1,1,1,1);
-		float4 z = float4(0,0,0,0);
-
-		asm pure nothrow @nogc {
-			movups XMM0, b;
-			vmovups XMM1, XMM0;
-			movups z, XMM0;
-		}
-
-		writefln("z = %s", z);
-	}
-	version(LDC) {
-
-	}
-	writefln("Done");
-}
 void testNoise() {
 	PerlinNoise2D noise = new PerlinNoise2D(10,10).generate();
     StopWatch w;
@@ -1242,3 +1212,204 @@ void testHalfFloat() {
 
     writefln("value=%s bits=%s", h.getFloat(), bits);
 }
+private {
+    align(16)
+    struct tri_intersect_data { static assert (tri_intersect_data.sizeof == 16*6);
+    align(16):
+        float3 rayorig;// in - ray origin
+        float3 raydir; // in - rayn direction
+        float3 p0;     // in
+        float3 p1;     // in
+        float3 p2;     // in
+	align(4):
+		float _padding;
+
+        float t;       // out if hit
+        float u;       // out if hit
+        float v;       // out if hit
+        float _unused;
+    }
+	extern(C) bool tri_intersect(tri_intersect_data*);
+}
+/+
+align(4):
+float f1,f2,f3,f4;
+void testIntersector() {
+	writefln("testing Intersector");
+
+	auto ray = Ray(float3(1, 0.5, 0.5), float3(0.5, 1, -1).normalised());
+	auto a = new Intersector(float3(0,  0,  0),
+							 float3(10, 0,  0),
+							 float3(0,  10, 0));
+
+	//auto r = a.intersect(ray, float.max, 0.01);
+
+	//auto r2 = a.intersect2(&ray, float.max, 0.01);
+
+	//auto r3 = a.intersect3(&ray, float.max, 0.01);
+
+
+	bench();
+}
+final class Intersector {
+	enum E   = 0.00001f;
+	enum YZX = 0b00_00_10_01;
+    enum ZXY = 0b00_01_00_10;
+align(16):
+	float3 p0, p1, p2;
+	float4 temp;
+	tri_intersect_data data;
+align(4):
+	float t, u, v;
+	float EPSILON     = E;
+	float NEG_EPSILON = -E;
+	float ONE		  = 1f;
+
+	this(float3 p0, float3 p1, float3 p2) {
+		this.p0 = p0; this.p1 = p1; this.p2 = p2;
+		this.temp = float4(9,8,7,6);
+
+		auto p = cast(float*)&data;
+		p[0..tri_intersect_data.sizeof/4] = 0.0f;
+	}
+	bool intersect(ref Ray r, float tbest, float tmin) {
+
+		// writefln("rayorigin = %s", r.origin);
+		// writefln("raydir = %s", r.direction);
+		// writefln("p0 = %s", p0);
+		// writefln("p1 = %s", p1);
+		// writefln("p2 = %s\n", p2);
+		auto edge1 = p1 - p0;
+		auto edge2 = p2 - p0;
+		//writefln("edge1 = %s", edge1);
+		//writefln("edge2 = %s", edge2);
+		auto h     = r.direction.cross(edge2);
+		//writefln("h = %s", h);
+		auto a     = edge1.dot(h);
+		//writefln("a = %s", a);
+		if(a >= -E && a <= E) return false;
+
+		auto f = 1f / a;
+		//writefln("f = %s", f);
+		auto s = r.origin - p0;
+		//writefln("s = %s", s);
+		auto u = f * s.dot(h);
+		//writefln("u = %s", u);
+		if(u <= 0 || u >= 1) return false;
+
+		auto q = s.cross(edge1);
+		auto v = f * r.direction.dot(q);
+		//writefln("q = %s", q);
+		//writefln("v = %s", v);
+		if(v<=0 || u+v >= 1) return false;
+
+		auto t = f * edge2.dot(q);
+		//writefln("old: t = %f u = %f, v = %f", t, u, v);
+
+		if(t >= tmin && t < tbest) {
+			this.t = t;
+			this.u = u;
+			this.v = v;
+			return true;
+		}
+
+		return false;
+	}
+	bool intersect2(Ray* r, float tbest, float tmin) {
+
+		data.rayorig = r.origin;
+		data.raydir = r.direction;
+		data.p0 = p0;
+		data.p1 = p1;
+		data.p2 = p2;
+
+		bool result = tri_intersect(&data);
+		//writefln("result = %s", result);
+		//writefln("new: t = %f u = %f, v = %f", data.t, data.u, data.v);
+
+		if(result && data.t >= tmin && data.t < tbest) {
+			t = data.t;
+			u = data.u;
+			v = data.v;
+			return true;
+		}
+
+		return false;
+	}
+}
+void bench() {
+	import std: approxEqual, isNaN;
+	writefln("Bench");
+	enum N = 100_000;//1_000_000;
+
+	float3[] p0 = new float3[N];
+	float3[] p1 = new float3[N];
+	float3[] p2 = new float3[N];
+
+	Ray[] rays = new Ray[N];
+
+	auto fl = ()=> float3(uniform(-10f, 10f), uniform(-10f, 10f), uniform(-10f, 10f));
+
+	auto check(float a, float b) {
+		if(isNaN(a) && isNaN(b)) return true;
+		if(isNaN(a) || isNaN(b)) return false;
+		return approxEqual(a, b);
+	}
+
+	foreach(i; 0..N) {
+		rays[i] = Ray(fl(), fl().normalised());
+		p0[i] = fl();
+		p1[i] = fl();
+		p2[i] = fl();
+	}
+
+	auto a = new Intersector(float3(0,  0,  0),
+							 float3(10, 0,  0),
+							 float3(0,  10, 0));
+
+	bool r1, r2;
+	float t,u,v;
+
+	writefln("Starting benchmark...");
+	StopWatch w; w.start();
+
+	foreach(i; 0..N) {
+		a.p0 = p0[i];
+		a.p1 = p1[i];
+		a.p2 = p2[i];
+
+		static if(false) {
+			r1 = a.intersect(rays[i], float.max, 0.01);
+			t = a.t;
+			u = a.u;
+			v = a.v;
+		} else {
+			r2 = a.intersect2(&rays[i], float.max, 0.01);
+		}
+
+		static if(false) {
+			if(!check(t, a.t)) {
+				throw new Error("Incorrect t = %f, %s".format(t, a.t));
+			}
+			if(!check(u, a.u)) {
+				throw new Error("Incorrect u = %f, %s".format(u, a.u));
+			}
+			if(!check(v, a.v)) {
+				throw new Error("Incorrect v = %f, %s".format(v, a.v));
+			}
+		}
+	}
+	w.stop();
+
+	writefln("r1=%s, r2 = %s", r1, r2);
+
+	int j = uniform(0,N);
+
+	//writefln("[%s] = %s", j, array1r[j]);
+
+	// writefln("g1 = %s", g1);
+	// writefln("g2 = %s", g2);
+
+	writefln("%03f ms", w.peek().total!"nsecs"/1000000.0);
+}
++/

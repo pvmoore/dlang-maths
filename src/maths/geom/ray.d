@@ -4,9 +4,9 @@ import maths.all;
 
 struct Ray {
 public:
-	Vector3 origin;
-	Vector3 direction;
-	Vector3 invDirection;
+	float3 origin;
+	float3 direction;
+	float3 invDirection;
 	uint3 posneg;			// 0=positive, 1=negative
 
 	string toString() {

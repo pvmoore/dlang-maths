@@ -1,10 +1,17 @@
 name "maths"
 platforms "windows"
-		
+
 buildType "debug" {
 	buildOptions "debugMode" "debugInfo" "alwaysStackFrame" "stackStomping" "warningsAsErrors"
 }
 buildType "release" {
+	dflags "-O5" platform="ldc"
+    dflags "-mcpu=broadwell" platform="ldc"
+    dflags "-mattr=+fma,+avx2" platform="ldc"
+    #dflags "-enable-cross-module-inlining" platform="ldc"
+    dflags "-cache=.dub/cache" platform="ldc"
+    dflags "-ffast-math" platform="ldc"
+
 	buildOptions "releaseMode" "optimize" "inline" "noBoundsCheck"
 }
 
@@ -12,9 +19,14 @@ configuration "test" {
 	#mainSourceFile "src/test.d"
 	targetType "executable"
 	targetName "bin-test"
+
+	sourceFiles "asm/obj/maths.obj"
 }
 configuration "library" {
 	targetType "library"
 	excludedSourceFiles "src/test.d"
+
+	sourceFiles "asm/obj/maths.obj"
 }
 
+dependency "common" version="~master"
