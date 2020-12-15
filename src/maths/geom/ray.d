@@ -13,18 +13,18 @@ public:
 		return "[Ray %s -> %s]".format(origin, direction);
 	}
 nothrow:
-	this(Vector3 o, Vector3 d) {
+	this(float3 o, float3 d) {
 		set(o, d);
 	}
-	void set(Vector3 o, Vector3 d) {
+	void set(float3 o, float3 d) {
         this.origin = o;
         setDirection(d);
     }
-	void set(const ref Vector3 o, const ref Vector3 d) {
+	void set(const ref float3 o, const ref float3 d) {
 	    this.origin = o;
 	    setDirection(d);
     }
-    void setDirection(Vector3 d) {
+    void setDirection(float3 d) {
         direction    = d;
         invDirection = d.reciprocalOf();
 		posneg       = uint3(direction.x<0, direction.y<0, direction.z<0);

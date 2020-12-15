@@ -6,32 +6,32 @@ import maths.all;
  */
 struct AABB {
 public:
-	Vector3[2] pp;
+	float3[2] pp;
 
 	string toString() {
 		return "AABB(%s -> %s)".format(pp[0], pp[1]);
 	}
 	static struct Intersection { float near; float far; }
 nothrow:
-    Vector3 min() { return pp[0]; }
-	Vector3 max() { return pp[1]; }
-	Vector3 middle() {
+    float3 min() { return pp[0]; }
+	float3 max() { return pp[1]; }
+	float3 middle() {
 	    return pp[0]+(pp[1]-pp[0])*0.5;
     }
 
-	this(Vector3 a, Vector3 b) {
+	this(float3 a, float3 b) {
 		set(a,b);
 	}
-	this(Vector3 a, Vector3 b, Vector3 c) {
+	this(float3 a, float3 b, float3 c) {
         set(a,b);
         enclose(c);
     }
-    void set(Vector3 a, Vector3 b) {
+    void set(float3 a, float3 b) {
         pp[0] = a;
         pp[1] = a;
         enclose(b);
     }
-	auto enclose(Vector3 v) {
+	auto enclose(float3 v) {
         pp[0].x = .min(pp[0].x, v.x);
         pp[0].y = .min(pp[0].y, v.y);
         pp[0].z = .min(pp[0].z, v.z);
