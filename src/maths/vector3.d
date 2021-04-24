@@ -95,9 +95,9 @@ pragma(inline,true) {
 	}
 	bool opEquals(inout Vec3!T o) const {
 		static if(isFloatingPoint!T) {
-			if(!approxEqual!(T, T)(x, o.x)) return false;
-			if(!approxEqual!(T, T)(y, o.y)) return false;
-			if(!approxEqual!(T, T)(z, o.z)) return false;
+			if(!isClose!(T, T)(x, o.x)) return false;
+			if(!isClose!(T, T)(y, o.y)) return false;
+			if(!isClose!(T, T)(z, o.z)) return false;
 			return true;
 		} else {
 			return x==o.x && y==o.y && z==o.z;

@@ -1,6 +1,6 @@
 
 import std.stdio				: writefln;
-import std.math					: approxEqual;
+import std.math					: isClose;
 import std.datetime.stopwatch	: StopWatch;
 import std.random       		: uniform;
 import maths.all;
@@ -257,7 +257,7 @@ void testVector2() {
 	assert(v1.toHash != v2.toHash);
 
 	// magnitude
-	assert(approxEqual(Vector2(10,10).magnitude, 14.1421));
+	assert(isClose(Vector2(10,10).magnitude, 14.1421));
 
 	// magnitudeSquared
 	assert(Vector2(10,10).magnitudeSquared == 200);
@@ -281,7 +281,7 @@ void testVector2() {
 	assert(v3.angleTo(v6).degrees==90);
 
 	// distanceFromLine
-	assert(approxEqual(2.12132, Vector2(10,13).distanceFromLine(Vector2(10,10), Vector2(15,15))));
+	assert(isClose(2.12132, Vector2(10,13).distanceFromLine(Vector2(10,10), Vector2(15,15))));
 
 	// isLeftOfLine
 	assert(true == Vector2(10,11).isLeftOfLine(Vector2(10,10), Vector2(15,15)));
@@ -299,7 +299,7 @@ void testVector2() {
 	// toRadians
 	assert(Vector2(0,1).rotated(0.degrees).angle.degrees == 0);
 	assert(Vector2(0,1).rotated(90.degrees).angle.degrees == 90);
-	assert(approxEqual(Vector2(0,1).rotated(180.degrees).angle.degrees, -180));	// equivalent to 180
+	assert(isClose(Vector2(0,1).rotated(180.degrees).angle.degrees, -180));	// equivalent to 180
 	assert(Vector2(0,1).rotated(270.degrees).angle.degrees == -90);
 
 	// left
@@ -997,7 +997,7 @@ void testDeterminant() {
 		m.set([3, 2,
 		       5, 2]);
 		writefln("%s determinant=%s", m, m.getDeterminant());
-		assert(approxEqual!(float, float)(m.getDeterminant(), -4f));
+		assert(isClose!(float, float)(m.getDeterminant(), -4f));
 	}
 	{
 		auto m = new Matrix!float(3, 3);
@@ -1005,7 +1005,7 @@ void testDeterminant() {
 		       3,2,1,
 		       9,3,1]);
 		writefln("%s determinant=%s", m, m.getDeterminant());
-		assert(approxEqual!(float, float)(m.getDeterminant(), -16f));
+		assert(isClose!(float, float)(m.getDeterminant(), -16f));
 	}
 	{
 		auto m = new Matrix!float(4, 4);
@@ -1014,7 +1014,7 @@ void testDeterminant() {
 		       3, 0, 2, 1,
 		       9, 2, 3, 1]);
 		writefln("%s determinant=%s", m, m.getDeterminant());
-		assert(approxEqual!(float, float)(m.getDeterminant(), 24f));
+		assert(isClose!(float, float)(m.getDeterminant(), 24f));
 	}
 }
 
@@ -1155,37 +1155,37 @@ void testTrigonomety() {
         auto a1 = angle(o,h);
         auto a2 = angle(a,h);
         auto a3 = angle(o,a);
-        assert(approxEqual(a1.radians, 36.87.degrees.radians));
-        assert(approxEqual(a2.radians, 36.87.degrees.radians));
-        assert(approxEqual(a3.radians, 36.87.degrees.radians));
+        assert(isClose(a1.radians, 36.87.degrees.radians));
+        assert(isClose(a2.radians, 36.87.degrees.radians));
+        assert(isClose(a3.radians, 36.87.degrees.radians));
 
         auto o1 = opposite(a1, h);
         auto o2 = opposite(a1, a);
         auto o3 = opposite(a, h);
-        assert(o1.approxEqual(3));
-        assert(o2.approxEqual(3));
-        assert(o3.approxEqual(3));
+        assert(o1.isClose(3));
+        assert(o2.isClose(3));
+        assert(o3.isClose(3));
 
         auto ad1 = adjacent(a1, h);
         auto ad2 = adjacent(a1, o);
         auto ad3 = adjacent(o, h);
-        assert(ad1.approxEqual(4));
-        assert(ad2.approxEqual(4));
-        assert(ad3.approxEqual(4));
+        assert(ad1.isClose(4));
+        assert(ad2.isClose(4));
+        assert(ad3.isClose(4));
 
         auto h1 = hypotenuse(a1, o);
         auto h2 = hypotenuse(a1, a);
         auto h3 = hypotenuse(a, o);
-        assert(h1.approxEqual(5));
-        assert(h2.approxEqual(5));
-        assert(h3.approxEqual(5));
+        assert(h1.isClose(5));
+        assert(h2.isClose(5));
+        assert(h3.isClose(5));
     }
     {
         float a = 5;
         float b = 9;
         float c = 8;
         auto angle = angle(a,b,c);
-        assert(angle.degrees.approxEqual(62.18));
+        assert(angle.degrees.isClose(62.18));
     }
 
     //{

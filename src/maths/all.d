@@ -10,7 +10,7 @@ import std.algorithm : reverse;
 import std.traits   : isFloatingPoint, isImplicitlyConvertible;
 import std.math   :
     abs, cos, floor, sin, tan, pow,
-    sqrt, acos, asin, atan, approxEqual, atan2;
+    sqrt, acos, asin, atan, isClose, atan2;
 
 import common : dumpGPR, dumpXMM_PS, dumpXMM_PD;
 
