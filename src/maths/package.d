@@ -65,3 +65,7 @@ alias float3 = Vec3!float;
 alias float4 = Vec4!float;
 
 alias mat4  = Mat4!float;
+
+alias double2 = Vec2!double;
+alias double3 = Vec3!double;
+alias double4 = Vec4!double;
