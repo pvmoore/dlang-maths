@@ -9,7 +9,7 @@ void main() {
 	writefln("Testing...\n");
 
 	float ffff = 0;
-	if(ffff < 1) return;
+	//if(ffff < 1) return;
 
 	// testVector2();
 	// float ffff = 0;
@@ -290,7 +290,7 @@ void testVector2() {
 	// rotated
 	auto v7 = Vector2(0,1);
 	assert(v7.rotated(0.degrees)==Vector2(0,1));
-	assert(v7.rotated(360.degrees)==Vector2(0,1));
+	assert(v7.rotated(360.degrees)==Vector2(-0.0f, 1.0f));
 	assert(v7.rotated(45.degrees)==Vector2(-0.7071, 0.7071));
 	assert(v7.rotated(90.degrees)==Vector2(-1, 0));
 	assert(v7.rotated(180.degrees)==Vector2(0, -1));

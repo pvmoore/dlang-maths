@@ -49,8 +49,12 @@ pragma(inline,true) {
 	bool opEquals(T[] array) const { return array.length==2 && x==array[0] && y==array[1]; }
 	bool opEquals(inout Vec2!T o) const {
         static if(isFloatingPoint!T) {
-            if(!isClose!(T, T)(x, o.x)) return false;
-            if(!isClose!(T, T)(y, o.y)) return false;
+
+            const maxRelDiff = 10.0 ^^ -((T.dig + 1) / 2 + 1);
+            const maxAbsDiff = T.epsilon*2;
+
+            if(!isClose!(T, T)(x, o.x, maxRelDiff, maxAbsDiff)) return false;
+            if(!isClose!(T, T)(y, o.y, maxRelDiff, maxAbsDiff)) return false;
             return true;
         } else {
             return x==o.x && y==o.y;
@@ -273,10 +277,10 @@ static if(isFloatingPoint!T) {
 		y = cast(T)(xx*sn+y*cs);
 	}
 	auto rotated(Angle!T angle) const {
-	    const radians = angle.radians;
-		double cs = cos(cast(float)radians);
-		double sn = sin(cast(float)radians);
-		return Vec2!T(cast(T)(x*cs-y*sn), cast(T)(x*sn+y*cs));
+	    T radians = angle.radians;
+		T cs = cos(cast(T)radians);
+		T sn = sin(cast(T)radians);
+		return Vec2!T(x*cs-y*sn, x*sn+y*cs);
 	}
 }
 	/// returns a new Vec2!T which is perpendicular to this one (pointing to the left)

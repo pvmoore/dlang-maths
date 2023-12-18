@@ -95,9 +95,12 @@ pragma(inline,true) {
 	}
 	bool opEquals(inout Vec3!T o) const {
 		static if(isFloatingPoint!T) {
-			if(!isClose!(T, T)(x, o.x)) return false;
-			if(!isClose!(T, T)(y, o.y)) return false;
-			if(!isClose!(T, T)(z, o.z)) return false;
+			const maxRelDiff = 10.0 ^^ -((T.dig + 1) / 2 + 1);
+            const maxAbsDiff = T.epsilon*2;
+
+			if(!isClose!(T, T)(x, o.x, maxRelDiff, maxAbsDiff)) return false;
+			if(!isClose!(T, T)(y, o.y, maxRelDiff, maxAbsDiff)) return false;
+			if(!isClose!(T, T)(z, o.z, maxRelDiff, maxAbsDiff)) return false;
 			return true;
 		} else {
 			return x==o.x && y==o.y && z==o.z;
