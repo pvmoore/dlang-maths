@@ -278,6 +278,15 @@ pragma(inline,true) {
         return Vec3!T(.abs(x), .abs(y), .abs(z));
 	}
 
+	/** Compare two Vec3 structs component-wise */
+    auto compareTo(Vec3!T rhs) {
+        return Vec3!T(
+            x == rhs.x ? 0 : x > rhs.x ? 1 : -1,
+            y == rhs.y ? 0 : y > rhs.y ? 1 : -1,
+			z == rhs.z ? 0 : z > rhs.z ? 1 : -1
+        );
+    }
+
     /// v1.v2 / (|v1|.|v2|)
     Angle!T angleTo(Vec3!T v) const {
         T angle = cast(T)acos(cast(float)(dot(v) / (magnitude * v.magnitude)));

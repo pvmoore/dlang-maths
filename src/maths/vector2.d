@@ -189,6 +189,14 @@ pragma(inline,true) {
         return Vec2!T(.abs(x), .abs(y));
     }
 
+    /** Compare two Vec2 structs component-wise */
+    auto compareTo(Vec2!T rhs) {
+        return Vec2!T(
+            x == rhs.x ? 0 : x > rhs.x ? 1 : -1,
+            y == rhs.y ? 0 : y > rhs.y ? 1 : -1
+        );
+    }
+
 static if(isFloatingPoint!T) {
 
     void floor() {

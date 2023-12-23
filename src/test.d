@@ -376,6 +376,16 @@ void testVector2() {
 		assert(a.dot(c) == -1);
 		assert(a.dot(d) == 0);
 	}
+	{ 	// compareTo
+		float2 a = float2(10, 10);
+		float2 b = float2(-10, -10);
+
+		assert(a.compareTo(a) == float2(0, 0));
+		assert(b.compareTo(b) == float2(0, 0));
+
+		assert(a.compareTo(b) == float2(1, 1));
+		assert(b.compareTo(a) == float2(-1, -1));
+	}
 }
 void testVector3() {
     writefln("Test Vec3");
@@ -455,6 +465,16 @@ void testVector3() {
 
         assert((int3(0b000, 0b010, 0b100) ^ int3(0b111, 0b111, 0b111)) == int3(0b111, 0b101, 0b011));
     }
+	{ 	// compareTo
+		float3 a = float3(10, 10, 10);
+		float3 b = float3(-10, -10, -10);
+
+		assert(a.compareTo(a) == float3(0, 0, 0));
+		assert(b.compareTo(b) == float3(0, 0, 0));
+
+		assert(a.compareTo(b) == float3(1, 1, 1));
+		assert(b.compareTo(a) == float3(-1, -1, -1));
+	}
 }
 void testVector4() {
     writefln("Test Vec4");
@@ -698,6 +718,16 @@ void testVector4() {
         assert(v.allGTE(int4(1,2,3,4)));
         assert(!v.allGTE(int4(2,3,4,5)));
     }
+	{ 	// compareTo
+		float4 a = float4(10, 10, 10, 10);
+		float4 b = float4(-10, -10, -10, -10);
+
+		assert(a.compareTo(a) == float4(0, 0, 0, 0));
+		assert(b.compareTo(b) == float4(0, 0, 0, 0));
+
+		assert(a.compareTo(b) == float4(1, 1, 1, 1));
+		assert(b.compareTo(a) == float4(-1, -1, -1, -1));
+	}
 }
 
 void testMatrix4() {

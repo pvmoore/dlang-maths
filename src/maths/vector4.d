@@ -217,6 +217,16 @@ static if(isFloatingPoint!T) {
     auto abs() const {
         return Vec4!T(.abs(x), .abs(y), .abs(z), .abs(w));
     }
+
+    /** Compare two Vec4 structs component-wise */
+    auto compareTo(Vec4!T rhs) {
+        return Vec4!T(
+            x == rhs.x ? 0 : x > rhs.x ? 1 : -1,
+            y == rhs.y ? 0 : y > rhs.y ? 1 : -1,
+			z == rhs.z ? 0 : z > rhs.z ? 1 : -1,
+            w == rhs.w ? 0 : w > rhs.w ? 1 : -1
+        );
+    }
 }
 
 /+
