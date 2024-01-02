@@ -17,6 +17,7 @@ import maths.trigonometry;
 import maths.noise;     // noise sub package
 import maths.random;    // random sub package
 import maths.camera;    // camera sub package
+import maths.simd;
 
 import maths.geom.aabb;
 import maths.geom.ray;

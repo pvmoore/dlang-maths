@@ -3,7 +3,6 @@ module maths.vector2;
 import maths.all;
 
 
-
 struct Vec2(T) if(isSupportedVecType!T) {
 	T x=0,y=0;
 
@@ -73,8 +72,8 @@ pragma(inline,true) {
         }
 
         ulong a = 5381;
-        a  = ((a << 7) ) + p[0];
-        a ^= ((a << 13) ) + p[1];
+        a  = (a << 7) + p[0];
+        a ^= (a << 13) + p[1];
         return a;
     }
 

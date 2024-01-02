@@ -21,10 +21,20 @@ configuration "test" {
 	targetName "bin-test"
 
 	sourceFiles "asm/obj/maths.obj"
+
+	excludedSourceFiles "src/test/bench*.d"
+}
+configuration "bench" {
+	mainSourceFile "src/test/bench.d"
+	targetType "executable"
+	targetName "bin-bench"
+
+	sourceFiles "asm/obj/maths.obj"
+	excludedSourceFiles "src/test/test*.d" 
 }
 configuration "library" {
 	targetType "library"
-	excludedSourceFiles "src/test.d"
+	excludedSourceFiles "src/test/*"
 
 	sourceFiles "asm/obj/maths.obj"
 }

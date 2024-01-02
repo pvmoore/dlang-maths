@@ -2,7 +2,7 @@ module maths.quaternion;
 
 import maths.all;
 
-final struct Quaternion {
+struct Quaternion {
 	float x, y, z, w;
 	
 	this(float x, float y, float z, float w) { 

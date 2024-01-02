@@ -20,7 +20,7 @@
             "label": "**** Test (DMD) Release ****",
             "type": "shell",
             "windows": {
-                "command": "dub run --build=release --config=test --compiler=dmd --arch=x86_64"
+                "command": "run_debug_build.bat test"
             },
             "group": {
                 "kind": "build",
@@ -36,7 +36,23 @@
             "label": "**** Test (LDC) Release ****",
             "type": "shell",
             "windows": {
-                "command": "dub run --build=release --config=test --compiler=ldc2 --arch=x86_64"
+                "command": "run_release_build.bat test"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "**** Benchmark (LDC Release) ****",
+            "type": "shell",
+            "windows": {
+                "command": "run_release_build.bat bench"
             },
             "group": {
                 "kind": "build",
