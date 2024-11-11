@@ -3,6 +3,7 @@ platforms "windows"
 
 buildType "debug" {
 	buildOptions "debugMode" "debugInfo" "alwaysStackFrame" "stackStomping" "warningsAsErrors"
+	dflags "-ffast-math" platform="ldc"
 }
 buildType "release" {
 	dflags "-O5" platform="ldc"
