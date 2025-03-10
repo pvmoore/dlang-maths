@@ -49,6 +49,14 @@ T max(T)(T a, T b, T c, T d) pure nothrow {
     return max(a, max(b,c,d));
 }
 
+
+T minOf(T)(T a, T b) {
+	return a<b ? a : b;
+}
+T maxOf(T)(T a, T b) {
+	return a>b ? a : b;
+}
+
 T minOf(T)(T[] array...)
 	if(__traits(compiles,"T a; T b; bool c = a<b;"))
 {
