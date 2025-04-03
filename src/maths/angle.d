@@ -21,6 +21,12 @@ struct Angle(T) {
     string toString() {
         return "%.2f deg".format(degrees());
     }
+    Angle!T opUnary(string op)() const if(op=="-") {
+        return Angle!T(-radians);
+    }
+    Angle!T opBinary(string op)(Angle!T o) const if(op=="+" || op=="-") {
+        return Angle!T(radians + o.radians);
+    }
 @nogc:
 nothrow:
 pragma(inline,true):

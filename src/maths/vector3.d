@@ -27,9 +27,6 @@ nothrow:
 	this(T x, Vec2!T yz) {
         this(x, yz.x, yz.y);
     }
-	this(Vec3!T v) {
-		this(v.x, v.y, z);
-	}
 
     /// v.to!double;
     Vec3!B to(B)() const {
