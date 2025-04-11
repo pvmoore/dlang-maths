@@ -7,7 +7,7 @@ import core.stdc.string : memcmp, memset, memcpy;
 import ldc.llvmasm;
 import ldc.attributes;
 
-import common : throwIf;
+import common.utils : throwIf;
 
 /**
  * Each Vec is a 256 bit (32 byte) AVX2 register.
