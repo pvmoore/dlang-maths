@@ -153,6 +153,44 @@ public:
 		recalculateView = true;
 		return this;
 	}
+	auto rotateXRelative(Angle!float f) {
+		_forward.rotateAroundX(f);
+		_forward.normalise();
+		_up = right.right(_forward);
+		recalculateView = true;
+		return this;
+	}
+	auto rotateYRelative(Angle!float f) {
+		_forward.rotateAroundY(f);
+		_forward.normalise();
+		recalculateView = true;
+		return this;
+	}
+	auto rotateZRelative(Angle!float f) {
+		_up.rotateAroundZ(f);
+		_up.normalise();
+		recalculateView = true;
+		return this;
+	}
+	auto rotateXAbsolute(float3 forward, Angle!float f) {
+		forward.rotateAroundX(f);
+		_forward = forward.normalised();
+		_up = right.right(_forward);
+		recalculateView = true;
+		return this;
+	}
+	auto rotateYAbsolute(float3 forward, Angle!float f) {
+		forward.rotateAroundY(f);
+		_forward = forward.normalised();
+		recalculateView = true;
+		return this;
+	}
+	auto rotateZAbsolute(float3 up, Angle!float f) {
+		up.rotateAroundZ(f);
+		_up = up.normalised();
+		recalculateView = true;
+		return this;
+	}
 	ref Matrix4 P() {
 		if(recalculateProj) {
 		    if(mode==Mode.VULKAN)
