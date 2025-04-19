@@ -89,6 +89,9 @@ public:
         mode = Mode.VULKAN;
         return this;
     }
+	auto setFov(Angle!float fov) {
+		return fovNearFar(fov, _near, _far);
+	}
 	auto fovNearFar(Angle!float fov, float near, float far) {
 		this._fov  = fov;
 		this._near = near;
