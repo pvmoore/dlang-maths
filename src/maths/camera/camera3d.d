@@ -36,6 +36,12 @@ public:
     float near() 			{ return _near; }
     float far() 			{ return _far; }
 
+	/** 
+	 *  Return true if the view or projection matrices require recalculation. 
+	 *  This indicates that the camera has moved and any clients of the camera may need to update.
+	 */
+	bool viewProjModified() { return recalculateView | recalculateProj; }
+
 	override string toString() {
 		return "[Camera pos:%s forward:%s up:%s"
 			.format(_position.toString(2), _forward.toString(2), _up.toString(2));
