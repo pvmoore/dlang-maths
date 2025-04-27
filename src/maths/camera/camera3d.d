@@ -1,7 +1,5 @@
 module maths.camera.camera3d;
-/**
- *
- */
+
 import maths.all;
 
 final class Camera3D {
@@ -22,6 +20,7 @@ final class Camera3D {
 	bool recalculateProj = true;
 	bool recalculateViewProj = true;
 	bool recalculateInvViewProj = true;
+	bool modified = true;
 private:
 
 public:
@@ -36,11 +35,11 @@ public:
     float near() 			{ return _near; }
     float far() 			{ return _far; }
 
-	/** 
-	 *  Return true if the view or projection matrices require recalculation. 
-	 *  This indicates that the camera has moved and any clients of the camera may need to update.
-	 */
-	bool viewProjModified() { return recalculateView | recalculateProj; }
+	/** Return true if the camera state has been modified since the last call to resetModifiedState() */
+	bool wasModified() { return modified; }
+
+	/** Reset the modified flag to false */
+	void resetModifiedState() { modified = false; }
 
 	override string toString() {
 		return "[Camera pos:%s forward:%s up:%s"
@@ -102,12 +101,14 @@ public:
 		this._fov  = fov;
 		this._near = near;
 		this._far  = far;
+		modified = true;
 		recalculateProj = true;
 		return this;
 	}
 	auto resize(T)(Vec2!T windowSize) {
 	    assert(windowSize.width>0 && windowSize.height>0);
         this._windowSize = windowSize.to!float;
+		modified = true;
 	    recalculateProj  = true;
 	    return this;
 	}
@@ -115,16 +116,19 @@ public:
 	auto moveForward(float f) {
 		auto dist  = _forward * f;
 		_position += dist;
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
 	auto movePositionRelative(vec3 newpos) {
 	    _position += newpos;
+		modified = true;
 	    recalculateView = true;
         return this;
 	}
 	auto movePositionAbsolute(vec3 newpos) {
         _position = newpos;
+		modified = true;
         recalculateView = true;
         return this;
     }
@@ -132,6 +136,7 @@ public:
 		auto right   = _forward.right(_up);
 		auto dist    = right * f;
 		_position   += dist;
+		modified = true;
 		recalculateView = true;
 		return true;
 	}
@@ -141,6 +146,7 @@ public:
 		auto dist    = right * f;
 		_forward += dist;
 		_forward.normalise();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
@@ -151,6 +157,7 @@ public:
 		_forward += dist;
 		_forward.normalise();
 		_up = right.right(_forward);
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
@@ -159,6 +166,7 @@ public:
 		auto dist = right() * f;
 		_up += dist;
 		_up.normalise();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
@@ -166,18 +174,21 @@ public:
 		_forward.rotateAroundX(f);
 		_forward.normalise();
 		_up = right.right(_forward);
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
 	auto rotateYRelative(Angle!float f) {
 		_forward.rotateAroundY(f);
 		_forward.normalise();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
 	auto rotateZRelative(Angle!float f) {
 		_up.rotateAroundZ(f);
 		_up.normalise();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
@@ -185,18 +196,21 @@ public:
 		forward.rotateAroundX(f);
 		_forward = forward.normalised();
 		_up = right.right(_forward);
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
 	auto rotateYAbsolute(float3 forward, Angle!float f) {
 		forward.rotateAroundY(f);
 		_forward = forward.normalised();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
 	auto rotateZAbsolute(float3 up, Angle!float f) {
 		up.rotateAroundZ(f);
 		_up = up.normalised();
+		modified = true;
 		recalculateView = true;
 		return this;
 	}
