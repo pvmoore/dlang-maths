@@ -53,8 +53,18 @@ T max(T)(T a, T b, T c, T d) pure nothrow {
 T minOf(T)(T a, T b) {
 	return a<b ? a : b;
 }
+T minOf(T)(T a, T b, T c) {
+	return a<b && a<c ? a :
+		   b<c ? b :
+		   c;
+}
 T maxOf(T)(T a, T b) {
 	return a>b ? a : b;
+}
+T maxOf(T)(T a, T b, T c) {
+	return a>b && a>c ? a :
+		   b>c ? b :
+		   c;
 }
 
 T minOf(T)(T[] array...)
