@@ -365,6 +365,13 @@ pragma(inline,true) {
         double yy = y;
         return Vec3!T(cast(T)(xx*c - yy*s), cast(T)(xx*s + yy*c), z);
     }
+
+	T distanceTo(T)(Vec3!T b) nothrow @nogc {
+		return (this-b).magnitude;
+	}
+	T distanceToSquared(T)(Vec3!T b) nothrow @nogc {
+		return (this-b).magnitudeSquared;
+	}
 }
 // -------------------------------------------------------------------------
 Vec3!T normal(T)(Vec3!T a, Vec3!T b) nothrow @nogc {
@@ -379,10 +386,4 @@ Vec3!T right(T)(Vec3!T dir, Vec3!T up) nothrow @nogc {
 }
 Vec3!T left(T)(Vec3!T dir, Vec3!T up) nothrow @nogc {
 	return -dir.right(up);
-}
-T distance(T)(Vec3!T a, Vec3!T b) nothrow @nogc {
-    return (a-b).magnitude;
-}
-T distanceSquared(T)(Vec3!T a, Vec3!T b) nothrow @nogc {
-    return (a-b).magnitudeSquared;
 }
