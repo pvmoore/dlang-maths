@@ -22,6 +22,7 @@ import maths.simd;
 import maths.geom.aabb;
 import maths.geom.ray;
 import maths.geom.sphere;
+import maths.geom.Triangle;
 
 import std.math : PI;
 import std.math : sin,cos;
