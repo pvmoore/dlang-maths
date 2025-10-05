@@ -183,6 +183,12 @@ pragma(inline,true) {
                       cast(T)fl(cast(float)y),
                       cast(T)fl(cast(float)z));
     }
+	Vec3!T round() const {
+        import std.math : round;
+        return Vec3!T(cast(T)round(cast(float)x),
+                      cast(T)round(cast(float)y),
+                      cast(T)round(cast(float)z));
+    }
 
     uint indexOfMin() const {
         return x<y && x<z ? 0 :

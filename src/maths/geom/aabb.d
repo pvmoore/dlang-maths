@@ -18,6 +18,9 @@ nothrow:
 	float3 middle() {
 	    return pp[0]+(pp[1]-pp[0])*0.5;
     }
+    float3 size() { 
+        return pp[1] - pp[0]; 
+    }
 
 	this(float3 a, float3 b) {
 		set(a,b);
