@@ -65,6 +65,21 @@ static if(isFloatingPoint!T) {
 
 		return obj.xyz;
 	}
+	/**
+	 *  Convenience for multiplying by a 4x4 matrix
+	 *  auto m = mat4.rotateX(45.degrees);
+	 *  auto a = vec3(1,2,3);
+	 *  auto b = a * m;
+	 */
+	Vec3!T opBinary(string op)(Mat4!T o) const {
+        static if(op=="*") {
+            return Vec4!T(
+                o[0].x * x + o[0].y * y + o[0].z * z + o[0].w * 1,
+                o[1].x * x + o[1].y * y + o[1].z * z + o[1].w * 1,
+                o[2].x * x + o[2].y * y + o[2].z * z + o[2].w * 1,
+                o[3].x * x + o[3].y * y + o[3].z * z + o[3].w * 1).xyz();
+        } else assert(false, "Vec3!%s"~op~"Mat4!%s is not implemented".format(T.stringof, T.stringof));
+    }
 }
 pragma(inline,true) {
     // getters
