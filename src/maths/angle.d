@@ -6,6 +6,13 @@ import maths.all;
 nothrow:
 pragma(inline,true):
 
+float toRadians(float degrees) {
+    return degrees * f_PIdiv180;
+}
+float toDegrees(float radians) {
+    return radians * f_180divPI;
+}
+
 /// eg. 90.degrees
 Angle!float degrees(float d) pure {
     return Angle!float(d*f_PIdiv180);

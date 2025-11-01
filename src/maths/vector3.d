@@ -137,38 +137,65 @@ pragma(inline,true) {
         return a;
     }
 
+	/**
+	 *  <op> this
+	 *
+	 * Only -this is supported.
+	 */
 	auto opUnary(string op)() {
         static if(op == "-") {
             return Vec3!T(-x, -y, -z);
-        } else assert(false, "Unary operator "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "opUnary!("~op~") for type %s not implemented".format(T.stringof));
     }
-    Vec3!T opBinary(string op)(T s) const {
+	/** 
+	 * this <op> value
+	 */
+    auto opBinary(string op)(T s) const {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
-            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+            static assert(false, "opBinary!("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec3!T(x"~op~"s,y"~op~"s,z"~op~"s)");
-        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "opBinary!("~op~") for type %s not implemented".format(T.stringof));
     }
-    Vec3!T opBinary(string op)(Vec3!T rhs) const {
+	/** 
+	 * value <op> this
+	 */
+	auto opBinaryRight(string op)(T s) const {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
-            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+            static assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
+        } else static if(isSupportedVectorBinaryOp!op) {
+            return mixin("Vec3!T(x"~op~"s,y"~op~"s,z"~op~"s)");
+        } else assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
+    }
+	/** 
+	 * this <op> rhsVector
+	 */
+    auto opBinary(string op)(Vec3!T rhs) const {
+        static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
+            static assert(false, "opBinary!("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
             return mixin("Vec3!T(x"~op~"rhs.x,y"~op~"rhs.y,z"~op~"rhs.z)");
-        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "opBinary!("~op~") for type %s not implemented".format(T.stringof));
     }
+	/**
+	 *  this <op>= value
+	 */
     void opOpAssign(string op)(T s) {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
-            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+            static assert(false, "opOpAssign("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
             mixin("x"~op~"=s; y"~op~"=s; z"~op~"=s;");
-        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "opOpAssign("~op~") for type %s not implemented".format(T.stringof));
     }
+	/**
+	 *  this <op>= rhsVector
+	 */
     void opOpAssign(string op)(Vec3!T rhs) {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
-            static assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+            static assert(false, "opOpAssign("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
            	mixin("x"~op~"=rhs.x; y"~op~"=rhs.y; z"~op~"=rhs.z;");
-        } else assert(false, "Binary op "~op~" for type %s not implemented".format(T.stringof));
+        } else assert(false, "opOpAssign("~op~") for type %s not implemented".format(T.stringof));
     }
 
     bool anyLT(T v) const  { return x<v || y<v || z<v; }

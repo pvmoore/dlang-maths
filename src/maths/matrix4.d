@@ -12,13 +12,16 @@ struct Mat4(T) if(isFloatingPoint!T && isSupportedVecType!T) {
 	*/
 	Vec4!T[4] c = void;
 
-	string toString() {
-    	return format("%5.2f %5.2f %5.2f %5.2f\n%5.2f %5.2f %5.2f %5.2f\n%5.2f %5.2f %5.2f %5.2f\n%5.2f %5.2f %5.2f %5.2f\n",
+	/** Display in row major format */
+	string toString(string fmt = "%.5f") {
+		string f = "%s %s %s %s\n%s %s %s %s\n%s %s %s %s\n%s %s %s %s\n".format(
+			fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt, fmt);
+		return format(f,
 					  c[0][0], c[1][0], c[2][0], c[3][0],
 					  c[0][1], c[1][1], c[2][1], c[3][1],
 					  c[0][2], c[1][2], c[2][2], c[3][2],
 					  c[0][3], c[1][3], c[2][3], c[3][3]);
-    }
+	}
 //nothrow:
 //@nogc:
 	this(T v) {

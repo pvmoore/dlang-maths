@@ -4,6 +4,7 @@ import std.stdio				: writefln;
 import std.math					: isClose;
 import std.datetime.stopwatch	: StopWatch;
 import std.random       		: uniform;
+import std.format				: format;
 import maths;
 
 import test.test_camera;
@@ -12,11 +13,17 @@ import test.test_simd;
 import test.test_vector;
 import test.test_matrix;
 import test.test_matrix4;
+import test.test_quaternion;
 import test.test_noise;
 import test.test_random;
 
 void main() {
 	writefln("Testing...\n");
+
+    if(false) {
+        testQuaternion();
+        return;
+    }
 
 	testCamera();
 	testGeom();
@@ -26,6 +33,7 @@ void main() {
 	testRandom();
 	testSimd();
 	testVector();
+    testQuaternion();
 
 	testTrigonomety();
     testHalfFloat();
@@ -88,6 +96,14 @@ void testUtil() {
 			assert(isPrime(v)==false);
 		}
 	}
+    {
+        // toDegrees
+        assert(toDegrees(1.5708).isClose(90));
+    }
+    {
+        // toRadians
+        assert(toRadians(90).isClose(1.5708));
+    }
 }
 void testTrigonomety() {
     writefln("testing trigonometry");

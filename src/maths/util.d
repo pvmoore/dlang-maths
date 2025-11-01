@@ -2,7 +2,6 @@ module maths.util;
 
 import maths.all;
 
-
 /**
  *  More useful than sgn because it never returns 0.
  */

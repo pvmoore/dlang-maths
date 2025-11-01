@@ -5,15 +5,18 @@
     "tasks": [
         {
             "label": "**** Test (DMD) Debug ****",
-            "type": "dub",
-            "run": true,
-            "compiler": "dmd",
-            "archType": "x86_64",
-            "buildType": "debug",
-            "configuration": "test",
+            "type": "shell",
+            "windows": {
+                "command": "scripts/run_build.bat dmd debug test"
+            },
             "group": {
                 "kind": "build"
-            }
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
         },
         {
             "label": "**** Test (DMD) Release ****",
