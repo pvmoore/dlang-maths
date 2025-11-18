@@ -130,6 +130,13 @@ void testVector2() {
     auto v15 = Vec2!uint(1,2);
     assert(v15 << 1 == [2,4]);
 
+	{
+		// opBinaryRight
+		auto v = float2(1,2);
+		auto r = 1.0f / v;
+		assert(r == float2(1, 0.5));
+	}
+
 	{	// dot
 		float2 a = float2(0,1);  // up
 		float2 b = float2(1,0);  // right

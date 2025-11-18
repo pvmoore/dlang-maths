@@ -96,7 +96,7 @@ pragma(inline,true) {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
             static assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
-            return mixin("Vec2!T(x"~op~"s,y"~op~"s)");
+            return mixin("Vec2!T(s"~op~"x,s"~op~"y)");
         } else assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
     }
     Vec2!T opBinary(string op)(Vec2!T rhs) const {

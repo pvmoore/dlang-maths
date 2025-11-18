@@ -164,7 +164,7 @@ pragma(inline,true) {
         static if(isFloatingPoint!T && isIntOnlyVectorBinaryOp!op) {
             static assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
         } else static if(isSupportedVectorBinaryOp!op) {
-            return mixin("Vec3!T(x"~op~"s,y"~op~"s,z"~op~"s)");
+            return mixin("Vec3!T(s"~op~"x,s"~op~"y,s"~op~"z)");
         } else assert(false, "opBinaryRight!("~op~") for type %s not implemented".format(T.stringof));
     }
 	/** 
